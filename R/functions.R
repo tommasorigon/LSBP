@@ -1,7 +1,8 @@
-library(BayesLogit)
-library(Matrix)
-library(mvtnorm)
-
+#'@importFrom Rcpp evalCpp sourceCpp
+#'@importFrom BayesLogit rpg.devroye
+#'@importFrom mvtnorm dmvtnorm rmvtnorm
+#'@import Matrix
+#'@useDynLib DLSBP
 
 sb <- function(nu) {
   nu    <- c(nu,1)
@@ -12,9 +13,9 @@ sb <- function(nu) {
 
 #' Bayesian nonparametric density estimation
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
+#' The dependent logistic stick-breaking process (DLSBP) model posterior mode estimated through the EM algorithm
 #' @param y A vector containing the response vector
-#' @param X A n \times p design matrix containing the covariates
+#' @param X A n x p design matrix containing the covariates
 #' @param H The number of mixtures
 #' @param maxiter Logical: should be putted a prior on alpha?
 #' @param prior Logical: should be putted a prior on alpha?
@@ -113,7 +114,7 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
   
   # Output
   cluster <- apply(z,1,which.max)
-  pred    <- prediction(y, as.matrix(X), as.matrix(beta), mu, tau)
+  pred    <- prediction(as.matrix(X), as.matrix(beta), mu, tau)
   list(beta = beta, mu = mu, tau=tau, pred = pred, cluster=cluster,z=z, logposterior=logpost)
 }
 
@@ -121,7 +122,8 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
 #'
 #' The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
 #' @param y A vector containing the response vector
-#' @param X A n \times p design matrix containing the covariates
+#' @param X A n x
+#'  p design matrix containing the covariates
 #' @param H The number of mixtures
 #' @param maxiter Logical: should be putted a prior on alpha?
 #' @param prior Logical: should be putted a prior on alpha?
@@ -379,6 +381,6 @@ DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, 
   
   # Output
   cluster <- apply(z,1,which.max)
-  pred    <- prediction(y,as.matrix(X),mu_beta,mu_tilde,pmax(0,(a_tilde-1)/b_tilde))
+  pred    <- prediction(as.matrix(X),mu_beta,mu_tilde,pmax(0,(a_tilde-1)/b_tilde))
   list(mu_beta = mu_beta, Sigma_beta=Sigma_beta, mu_tilde = mu_tilde, tau_tilde=tau_tilde, a_tilde=a_tilde, b_tilde=b_tilde, cluster=cluster,z=z, lowerbound=lowerbound,pred=pred)
 }

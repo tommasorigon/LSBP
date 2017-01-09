@@ -55,17 +55,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // prediction
-arma::vec prediction(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
-RcppExport SEXP DLSBP_prediction(SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
+arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
+RcppExport SEXP DLSBP_prediction(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(prediction(y, X, beta, mu, tau));
+    rcpp_result_gen = Rcpp::wrap(prediction(X, beta, mu, tau));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -10,7 +10,8 @@ DLSBP_Gibbs(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL,
 \arguments{
 \item{y}{A vector containing the response vector}
 
-\item{X}{A n \times p design matrix containing the covariates}
+\item{X}{A n x
+p design matrix containing the covariates}
 
 \item{H}{The number of mixtures}
 

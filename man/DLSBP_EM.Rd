@@ -10,7 +10,7 @@ DLSBP_EM(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE,
 \arguments{
 \item{y}{A vector containing the response vector}
 
-\item{X}{A n \times p design matrix containing the covariates}
+\item{X}{A n x p design matrix containing the covariates}
 
 \item{H}{The number of mixtures}
 
@@ -27,6 +27,6 @@ DLSBP_EM(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE,
 \item{pstep}{Logical: should be putted a prior on alpha?}
 }
 \description{
-The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
+The dependent logistic stick-breaking process (DLSBP) model posterior mode estimated through the EM algorithm
 }
 

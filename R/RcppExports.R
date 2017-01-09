@@ -13,7 +13,7 @@ Variational_step <- function(rho, y, X, beta, mu, tau_tilde, tau, ltau) {
     .Call('DLSBP_Variational_step', PACKAGE = 'DLSBP', rho, y, X, beta, mu, tau_tilde, tau, ltau)
 }
 
-prediction <- function(y, X, beta, mu, tau) {
-    .Call('DLSBP_prediction', PACKAGE = 'DLSBP', y, X, beta, mu, tau)
+prediction <- function(X, beta, mu, tau) {
+    .Call('DLSBP_prediction', PACKAGE = 'DLSBP', X, beta, mu, tau)
 }
 

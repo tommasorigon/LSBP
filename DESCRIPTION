@@ -1,12 +1,12 @@
 Package: DLSBP
 Type: Package
-Title: Useful script to survive PhD
+Title: DLSBP: Dependent Logistic Stick-Breaking Process
 Version: 0.0.1
 Date: 2017-01-10
 Author: Tommaso Rigon
 Maintainer: <tommaso.rigon@gmail.com>
-Description: It does some stuff
-License: License? Really? Yes!
+Description: Posterior inference for the Dependent Logistic Stick-breaking Process (DLSBP) of Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking.
+License: GPL-2
 LazyData: TRUE
 Imports: Rcpp (>= 0.12.8), RcppArmadillo (>= 0.7.600.1.0), mvtnorm, Matrix, BayesLogit
 LinkingTo: Rcpp, RcppArmadillo

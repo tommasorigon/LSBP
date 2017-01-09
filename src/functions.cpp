@@ -1,5 +1,6 @@
-// [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadilloExtensions/sample.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -212,7 +213,7 @@ List Variational_step(arma::mat rho, arma::vec y, arma::mat X, arma::mat beta, a
 }
 
 // [[Rcpp::export]]
-arma::vec prediction(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
+arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
   
   // Initialization
   int H = mu.n_elem;
@@ -247,34 +248,3 @@ arma::vec prediction(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arm
 
 return pred;
 }
-
-/*** R
-# library(Matrix)
-# 
-# sb <- function(nu) {
-#   nu    <- c(nu,1)
-#   H     <- length(nu)
-#   prob  <- nu * c(1,cumprod(1 - nu[-H]))
-#   return(prob)
-# }
-# 
-# set.seed(123)
-# n <- 10
-# y <- rnorm(n)
-# X <- cbind(1,runif(n))
-# H <- 4; p <- 2
-# mu        <- numeric(H)
-# beta      <- matrix(rnorm((H-1)*p,0,0.01), H - 1, p)
-# tau       <- as.numeric(rep(1/diff(quantile(y,c(.25,0.75))),H))
-# ltau      <- digamma(tau)
-# tau_mu <- rep(1,H)
-# rho    <- matrix(runif(n*(H-1)),n,H-1)
-# 
-# # Expectation_step(y,X,as.matrix(beta),mu,tau)
-# # G_update(y,X,as.matrix(beta),mu,tau)
-# # prediction(y,X,as.matrix(beta),mu,tau)
-# rho <- Variational_step(rho, y, X, as.matrix(beta), mu, tau_mu, tau, ltau)$rho
-# rho
-# Variational_step(rho, y, X, as.matrix(beta), mu, tau_mu, tau, ltau)
-# t(apply(Variational_step(rho, y, X, as.matrix(beta), mu, tau_mu, tau, ltau)$rho,1,sb))
-*/
