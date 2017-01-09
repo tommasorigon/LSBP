@@ -1,0 +1,13 @@
+Package: DLSBP
+Type: Package
+Title: Useful script to survive PhD
+Version: 0.0.1
+Date: 2017-01-10
+Author: Tommaso Rigon
+Maintainer: <tommaso.rigon@gmail.com>
+Description: It does some stuff
+License: License? Really? Yes!
+LazyData: TRUE
+Imports: Rcpp (>= 0.12.8), RcppArmadillo (>= 0.7.600.1.0), mvtnorm, Matrix, BayesLogit
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 5.0.1
