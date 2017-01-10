@@ -5,7 +5,7 @@
 \title{Bayesian nonparametric density estimation}
 \usage{
 DLSBP_VB(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE,
-  tol = 1e-04, useEM = FALSE, pstep = 10)
+  tol = 1e-04, useEM = FALSE, verbose_step = 10)
 }
 \arguments{
 \item{y}{A vector containing the response vector}
@@ -22,7 +22,7 @@ DLSBP_VB(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE,
 
 \item{tol}{Logical: should be putted a prior on alpha?}
 
-\item{pstep}{Logical: should be putted a prior on alpha?}
+\item{verbose_step}{Logical: should be putted a prior on alpha?}
 
 \item{random}{Logical: should be putted a prior on alpha?}
 }

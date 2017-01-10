@@ -2,31 +2,70 @@
 % Please edit documentation in R/functions.R
 \name{DLSBP_EM}
 \alias{DLSBP_EM}
-\title{Bayesian nonparametric density estimation}
+\title{EM algorithm for the DLSBP model}
 \usage{
-DLSBP_EM(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE,
-  tol = 1e-04, random = FALSE, pstep = 10)
+DLSBP_EM(y, X, H = 2, maxiter = 1000, prior = NULL, tol = 1e-04,
+  random = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{y}{A vector containing the response vector}
+\item{y}{a vector containing the response vector}
 
-\item{X}{A n x p design matrix containing the covariates}
+\item{X}{a n x p design matrix containing the covariates}
 
-\item{H}{The number of mixtures}
+\item{H}{an integer indicating the number of mixture components}
 
-\item{maxiter}{Logical: should be putted a prior on alpha?}
+\item{maxiter}{an integer indicating the maximum number of iterations for the EM algorithm}
 
-\item{prior}{Logical: should be putted a prior on alpha?}
+\item{prior}{a list containing prior hyperparameters (See details for a detailed description). If not provided, the MLE is computed.}
 
-\item{verbose}{Logical: should be putted a prior on alpha?}
+\item{tol}{a real number controlling the convergence criterium}
 
-\item{tol}{Logical: should be putted a prior on alpha?}
+\item{random}{a logical value indicating whether a random initialization should be used. Default is FALSE.}
 
-\item{random}{Logical: should be putted a prior on alpha?}
-
-\item{pstep}{Logical: should be putted a prior on alpha?}
+\item{verbose}{Logical: Should the logposterior be displayed while the algorithm is running?}
+}
+\value{
+The output is a list containing the following quantities
+\itemize{
+\item \verb{beta}. A (H - 1) x p matrix containing the beta coefficients.
+\item \verb{mu}. A H dimensional vector containing the mu coefficients.
+\item \verb{tau}. A H dimensional vector containing the tau coefficients.
+\item \verb{pred}. A n dimensional vector containing the the predicted values.
+\item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
+\item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
+\item \verb{logposterior}. The logposterior of the given model at convergence.
+}
 }
 \description{
-The dependent logistic stick-breaking process (DLSBP) model posterior mode estimated through the EM algorithm
+The dependent logistic stick-breaking process (DLSBP) model estimated trhough the E(C)M algorithm, which provides the posterior mode.
+}
+\details{
+The prior argument is a list which should contains the following elements
+\itemize{
+\item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
+\item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
+\item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
+\item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
+\item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+}
+}
+\examples{
+library(DLSBP)
+data(geyser)
+x <- geyser$waiting
+y <- geyser$duration
+X <- cbind(1,x*I(x<=68) + 68*I(x > 68),((x-68)*I(x>68))) # Predictors
+p <- NCOL(X)
+prior   <- list(b = rep(0,p),        
+                B = diag(100,p), 
+                mu_mu =0,            
+                tau_mu = 0.001,     
+                a_tau = 2,           
+                b_tau = 0.001)
+fit_EM   <- DLSBP_EM(y=y, X=X, H=3, prior=prior)
+
+}
+\references{
+Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
 }
 

@@ -1,6 +1,6 @@
 #'@importFrom Rcpp evalCpp sourceCpp
 #'@importFrom BayesLogit rpg.devroye
-#'@importFrom mvtnorm dmvtnorm rmvtnorm
+#'@importFrom mvtnorm dmvnorm rmvnorm
 #'@import Matrix
 #'@useDynLib DLSBP
 
@@ -11,28 +11,68 @@ sb <- function(nu) {
   return(prob)
 }
 
-#' Bayesian nonparametric density estimation
+#' EM algorithm for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model posterior mode estimated through the EM algorithm
-#' @param y A vector containing the response vector
-#' @param X A n x p design matrix containing the covariates
-#' @param H The number of mixtures
-#' @param maxiter Logical: should be putted a prior on alpha?
-#' @param prior Logical: should be putted a prior on alpha?
-#' @param verbose Logical: should be putted a prior on alpha?
-#' @param tol Logical: should be putted a prior on alpha?
-#' @param random Logical: should be putted a prior on alpha?
-#' @param pstep Logical: should be putted a prior on alpha?
+#' The dependent logistic stick-breaking process (DLSBP) model estimated trhough the E(C)M algorithm, which provides the posterior mode.
+#' 
+#' @param y a vector containing the response vector
+#' @param X a n x p design matrix containing the covariates
+#' @param H an integer indicating the number of mixture components
+#' @param maxiter an integer indicating the maximum number of iterations for the EM algorithm
+#' @param prior a list containing prior hyperparameters (See details for a detailed description). If not provided, the MLE is computed.
+#' @param tol a real number controlling the convergence criterium
+#' @param random a logical value indicating whether a random initialization should be used. Default is FALSE.
+#' @param verbose Logical: Should the logposterior be displayed while the algorithm is running?
+#' 
+#' @details  The prior argument is a list which should contains the following elements
+#' \itemize{
+#' \item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
+#' \item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
+#' \item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
+#' \item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
+#' \item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+#' }
+#' 
+#' 
+#' @return The output is a list containing the following quantities
+#' \itemize{
+#' \item \verb{beta}. A (H - 1) x p matrix containing the beta coefficients.
+#' \item \verb{mu}. A H dimensional vector containing the mu coefficients.
+#' \item \verb{tau}. A H dimensional vector containing the tau coefficients.
+#' \item \verb{pred}. A n dimensional vector containing the the predicted values.
+#' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
+#' \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
+#' \item \verb{logposterior}. The logposterior of the given model at convergence.
+#' }
+#' 
+#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @examples 
+#' library(DLSBP)
+#' data(geyser)
+#' x <- geyser$waiting
+#' y <- geyser$duration
+#' X <- cbind(1,x*I(x<=68) + 68*I(x > 68),((x-68)*I(x>68))) # Predictors
+#' p <- NCOL(X)
+#' prior   <- list(b = rep(0,p),        
+#'                 B = diag(100,p), 
+#'                 mu_mu =0,            
+#'                 tau_mu = 0.001,     
+#'                 a_tau = 2,           
+#'                 b_tau = 0.001)
+#' fit_EM   <- DLSBP_EM(y=y, X=X, H=3, prior=prior)
+#' 
 #' @export
 #' 
-DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, tol=1e-4, random=FALSE, pstep=10) {
+
+DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, random=FALSE, verbose = TRUE) {
   
   # Fixed quantities
   n <- length(y)
   p <- NCOL(X)
   X <- Matrix(X)
+  verbose_step = ceiling(maxiter / 50)
   
-  # In prior hyperparameters not defined, use the MLE, defined as follow
+  # If prior hyperparameters are not defined, then use the MLE
   if (is.null(prior)) {
     prior <- list(b = rep(0, p), 
                   B = Diagonal(p, Inf), 
@@ -42,10 +82,12 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
                   b_tau = 0)
   }
   
+  
+  
   # Hyperparameters
   b <- prior$b
   mu_mu  <- prior$mu_mu
-  B <- prior$B; P <- solve(B); Pb <- P %*% b
+  B <- Matrix(prior$B); P <- solve(B); Pb <- P %*% b
   tau_mu <- prior$tau_mu
   a_tau <- prior$a_tau
   b_tau <- prior$b_tau
@@ -53,11 +95,10 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
   # Initialization
   tau     <- rep(1/diff(quantile(y,c(.25,0.75))), H)
   mu      <- rep(0,H)
-  beta    <- Matrix(1e-2, H - 1, p) # A little jitter is added
+  beta    <- Matrix(1e-2, H - 1, p)    # A little jitter is added
   logpost <- -Inf
   
   if(random){
-    #tau   <- rgamma(H,a_tau,b_tau)    # Initialized a robust estimate of the global sample variance
     mu    <- rnorm(H,mean(y),sd(y))
     beta  <- Matrix(rnorm(p*(H-1),0,.1), H-1,p)
   }
@@ -79,10 +120,9 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
         z_sum <- rowSums(z[, h:H])
         omega <- z_sum/(2 * linpred) * tanh(linpred/2)
         is_omega_nan <- is.nan(omega); omega[is_omega_nan] <- z_sum[is_omega_nan]/4
-        #diag(Omega) <- omega
         
         # (Maximization) Step 3
-        Sigma_beta1 <- crossprod(X*sqrt(omega)) + P#t(X) %*% Omega %*% X + P
+        Sigma_beta1 <- crossprod(X*sqrt(omega)) + P #Equivalent to t(X) %*% Omega %*% X + P, but faster
         beta[h, ] <- solve(Sigma_beta1, crossprod(X ,z[, h] - z_sum/2) + Pb)
       }
 
@@ -101,65 +141,96 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, verbose = TRUE, 
     if(!is.finite(logpriors)) logpost_new <- loglik
     
     # Break the loop at convergence
-    if((logpost_new - logpost)<tol)break
+    if((logpost_new - logpost)<tol) {
+      cat(paste("Convergence reached after",r,"iterations."))
+      break
+    }
     
     # Otherwise continue!
     logpost <- logpost_new
     
     # Display status
     if (verbose) {
-      if(r%%pstep==0) cat(paste("log-posterior:",round(logpost,15),", iteration:", r, "\n",sep=""))
+      if(r%%verbose_step==0) cat(paste("log-posterior:",round(logpost,15),", iteration:", r, "\n",sep=""))
     }
   }
+  if(r==maxiter) warning(paste("Convergence has not been reached after",r,"iterations."))
   
   # Output
   cluster <- apply(z,1,which.max)
   pred    <- prediction(as.matrix(X), as.matrix(beta), mu, tau)
-  list(beta = beta, mu = mu, tau=tau, pred = pred, cluster=cluster,z=z, logposterior=logpost)
+  list(beta = as.matrix(beta), mu = mu, tau=tau, pred = pred, cluster=cluster,z=z, logposterior=logpost)
 }
 
-#' Bayesian nonparametric density estimation
+#' Gibbs sampling for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
-#' @param y A vector containing the response vector
-#' @param X A n x
-#'  p design matrix containing the covariates
-#' @param H The number of mixtures
-#' @param maxiter Logical: should be putted a prior on alpha?
-#' @param prior Logical: should be putted a prior on alpha?
-#' @param verbose Logical: should be putted a prior on alpha?
-#' @param tol Logical: should be putted a prior on alpha?
-#' @param random Logical: should be putted a prior on alpha?
-#' @param pstep Logical: should be putted a prior on alpha?
+#' The dependent logistic stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
+#' 
+#' @param y a vector containing the response vector.
+#' @param X a n x p design matrix containing the covariates
+#' @param H an integer indicating the number of mixture components
+#' @param R an integer indicating the number of MCMC replications, after the burn-in period
+#' @param burn.in an integer indicating the number of MCMC discarded as burn in period
+#' @param prior a list containing prior hyperparameters (See details for a detailed description). 
+#' @param verbose Logical: Should the MCMC iteration be displayed while the algorithm is running?
+#' @param store_parameters If FALSE, for faster inference only predictions are stored
+#' @param EM_initialization If TRUE, the starting values of the MCMC chain are those obtained by the EM algorithm.
+#' 
+#' @details  The prior argument is a list which should contains the following elements
+#' \itemize{
+#' \item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
+#' \item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
+#' \item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
+#' \item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
+#' \item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+#' }
+#' 
+#' 
+#' @return The output is a list containing the following quantities
+#' \itemize{
+#' \item \verb{beta}. An  R x (H - 1) x p array containing the beta coefficients at each step of the chain
+#' \item \verb{mu}. A R x H matrix containing the mu coefficients at each step of the chain.
+#' \item \verb{tau}. A R x H matrix containing the tau coefficients at each step of the chain.
+#' \item \verb{pred}. A R x n matrix containing a sample from predictive distribution fore each observation at each step of the chain.
+#' }
+#' 
+#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @examples 
+#' library(DLSBP)
+#' data(geyser)
+#' x <- geyser$waiting
+#' y <- geyser$duration
+#' X <- cbind(1,x*I(x<=68) + 68*I(x > 68),((x-68)*I(x>68))) # Predictors
+#' p <- NCOL(X)
+#' R <- 1000; burn.in <- 1000
+#' prior   <- list(b = rep(0,p),        
+#'                 B = diag(100,p), 
+#'                 mu_mu =0,            
+#'                 tau_mu = 0.001,     
+#'                 a_tau = 2,           
+#'                 b_tau = 0.001)
+#' fit_Gibbs   <- DLSBP_Gibbs(y=y, X=X, H=3, prior=prior, R=R,burn.in=burn.in)
+#' 
 #' @export
 #' 
-DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, verbose = TRUE, parameters=TRUE, useEM=TRUE, pstep=100){
+DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, verbose = TRUE, store_param=TRUE, EM_initialization=FALSE){
   
   # Fixed quantities
   n <- length(y)
   p <- NCOL(X)
   X <- Matrix(X)
-  
-  # In prior hyperparameters not defined, use the MLE, defined as follow
-  if (is.null(prior)) {
-    prior <- list(b = rep(0, p), 
-                  B = Diagonal(p, Inf), 
-                  mu_mu =  0, 
-                  tau_mu = 0, 
-                  a_tau = 1, 
-                  b_tau = 0)
-  }
+  verbose_step = ceiling(R / 200)
   
   # Hyperparameters
   b <- prior$b
   mu_mu  <- prior$mu_mu
-  B <- prior$B; P <- solve(B); Pb <- P %*% b
+  B <- Matrix(prior$B); P <- solve(B); Pb <- P %*% b
   tau_mu <- prior$tau_mu
   a_tau <- prior$a_tau
   b_tau <- prior$b_tau
   
   # Output 
-  if(parameters) {
+  if(store_param) {
     beta_out   <- array(0, c(R, H - 1, p)) 
     mu_out     <- matrix(0, R, H)
     tau_out    <- matrix(0, R, H)
@@ -167,12 +238,11 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
   prediction <- matrix(0, R, n)
   
   # Initialization
-  
   tau  <- rep(1/diff(quantile(y,c(.25,0.75))), H)
   mu   <- rep(0, H)
   beta <- Matrix(0, H - 1, p)
   
-  if(useEM) {
+  if(EM_initialization) {
     EM    <- DLSBP_EM(y, X, H=H, prior=prior, maxiter=500,tol=1e-4)
     tau   <- EM$tau
     mu    <- EM$mu
@@ -201,10 +271,8 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
         
         linh <- as.numeric(Xh %*% beta[h, ])
         omega <- rpg.devroye(num = nh, n = 1, z = linh)
-        #Omega <- Diagonal(nh)
-        #diag(Omega) <- omega
         
-        Sigma_beta <- solve(crossprod(Xh*sqrt(omega)) + P) #solve(t(Xh) %*% Omega %*% Xh + P)
+        Sigma_beta <- solve(crossprod(Xh*sqrt(omega)) + P) #Faster than solve(t(Xh) %*% Omega %*% Xh + P)
         mu_beta    <- Sigma_beta %*% (crossprod(Xh, zh - 1/2) + Pb)
         beta[h, ]  <- c(rmvnorm(1, mean = mu_beta, sigma = as.matrix(Sigma_beta)))
       }
@@ -224,7 +292,7 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
     
     # Output
     if (r > burn.in) {
-      if(parameters){ 
+      if(store_param){ 
         beta_out[r - burn.in, , ] <- as.matrix(beta)
         mu_out[r - burn.in, ]     <- mu
         tau_out[r - burn.in, ]    <- tau
@@ -234,10 +302,10 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
     }
     
     if (verbose) {
-      if(r%%pstep==0) cat(paste("Sampling iteration:", r, "\n",sep=""))
+      if(r%%verbose_step==0) cat(paste("Sampling iteration: ", r, "\n",sep=""))
     }
   }
-  if(parameters) return(list(pred = prediction,beta=beta_out,mu=mu_out,tau=tau_out))
+  if(store_param) return(list(pred = prediction, beta=beta_out, mu=mu_out, tau=tau_out))
   list(pred=prediction)
 }
 
@@ -252,10 +320,10 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
 #' @param verbose Logical: should be putted a prior on alpha?
 #' @param tol Logical: should be putted a prior on alpha?
 #' @param random Logical: should be putted a prior on alpha?
-#' @param pstep Logical: should be putted a prior on alpha?
+#' @param verbose_step Logical: should be putted a prior on alpha?
 #' @export
 #' 
-DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, tol=1e-4, useEM=FALSE, pstep=10) {
+DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, tol=1e-4, useEM=FALSE, verbose_step=10) {
   
   # Fixed quantities
   n <- length(y)
@@ -375,7 +443,7 @@ DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, 
     
     # Display status
     if (verbose) {
-      if(r%%pstep==0) cat(paste("Lower-bound:",round(lowerbound,15),", iteration:", r, "\n",sep=""))
+      if(r%%verbose_step==0) cat(paste("Lower-bound:",round(lowerbound,15),", iteration:", r, "\n",sep=""))
     }
   }
   

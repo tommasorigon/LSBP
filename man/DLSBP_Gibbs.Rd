@@ -2,32 +2,70 @@
 % Please edit documentation in R/functions.R
 \name{DLSBP_Gibbs}
 \alias{DLSBP_Gibbs}
-\title{Bayesian nonparametric density estimation}
+\title{Gibbs sampling for the DLSBP model}
 \usage{
 DLSBP_Gibbs(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL,
-  verbose = TRUE, parameters = TRUE, useEM = TRUE, pstep = 100)
+  verbose = TRUE, store_param = TRUE, EM_initialization = FALSE)
 }
 \arguments{
-\item{y}{A vector containing the response vector}
+\item{y}{a vector containing the response vector.}
 
-\item{X}{A n x
-p design matrix containing the covariates}
+\item{X}{a n x p design matrix containing the covariates}
 
-\item{H}{The number of mixtures}
+\item{H}{an integer indicating the number of mixture components}
 
-\item{prior}{Logical: should be putted a prior on alpha?}
+\item{R}{an integer indicating the number of MCMC replications, after the burn-in period}
 
-\item{verbose}{Logical: should be putted a prior on alpha?}
+\item{burn.in}{an integer indicating the number of MCMC discarded as burn in period}
 
-\item{pstep}{Logical: should be putted a prior on alpha?}
+\item{prior}{a list containing prior hyperparameters (See details for a detailed description).}
 
-\item{maxiter}{Logical: should be putted a prior on alpha?}
+\item{verbose}{Logical: Should the MCMC iteration be displayed while the algorithm is running?}
 
-\item{tol}{Logical: should be putted a prior on alpha?}
+\item{EM_initialization}{If TRUE, the starting values of the MCMC chain are those obtained by the EM algorithm.}
 
-\item{random}{Logical: should be putted a prior on alpha?}
+\item{store_parameters}{If FALSE, for faster inference only predictions are stored}
+}
+\value{
+The output is a list containing the following quantities
+\itemize{
+\item \verb{beta}. An  R x (H - 1) x p array containing the beta coefficients at each step of the chain
+\item \verb{mu}. A R x H matrix containing the mu coefficients at each step of the chain.
+\item \verb{tau}. A R x H matrix containing the tau coefficients at each step of the chain.
+\item \verb{pred}. A R x n matrix containing a sample from predictive distribution fore each observation at each step of the chain.
+}
 }
 \description{
-The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
+The dependent logistic stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
+}
+\details{
+The prior argument is a list which should contains the following elements
+\itemize{
+\item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
+\item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
+\item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
+\item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
+\item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+}
+}
+\examples{
+library(DLSBP)
+data(geyser)
+x <- geyser$waiting
+y <- geyser$duration
+X <- cbind(1,x*I(x<=68) + 68*I(x > 68),((x-68)*I(x>68))) # Predictors
+p <- NCOL(X)
+R <- 1000; burn.in <- 1000
+prior   <- list(b = rep(0,p),        
+                B = diag(100,p), 
+                mu_mu =0,            
+                tau_mu = 0.001,     
+                a_tau = 2,           
+                b_tau = 0.001)
+fit_Gibbs   <- DLSBP_Gibbs(y=y, X=X, H=3, prior=prior, R=R,burn.in=burn.in)
+
+}
+\references{
+Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
 }
 

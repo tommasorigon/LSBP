@@ -1,6 +1,5 @@
-#include <RcppArmadilloExtensions/sample.h>
 // [[Rcpp::depends(RcppArmadillo)]]
-
+#include <RcppArmadilloExtensions/sample.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -213,8 +212,9 @@ List Variational_step(arma::mat rho, arma::vec y, arma::mat X, arma::mat beta, a
 }
 
 // [[Rcpp::export]]
+
 arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
-  
+
   // Initialization
   int H = mu.n_elem;
   int n = X.n_rows;
