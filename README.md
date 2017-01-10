@@ -2,7 +2,7 @@
 
 R functions and scripts to implement the Dependent Logistic Stick-Breaking process model of
 
-* Rigon, T. and Durante, D., (2017), [Bayesian Inference via logistic stick-breaking](www.google.com), ArXiv.
+* Rigon, T. and Durante, D., (2017), [Bayesian Inference via logistic stick-breaking](), ArXiv.
 
 The `DLSBP` package can be installed as follow
 

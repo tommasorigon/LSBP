@@ -1,5 +1,5 @@
-library(DLSBP)
 rm(list=ls())
+library(DLSBP)
 data(geyser)
 
 x <- geyser$waiting
