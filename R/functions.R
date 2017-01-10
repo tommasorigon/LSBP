@@ -151,7 +151,7 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, random
     
     # Display status
     if (verbose) {
-      if(r%%verbose_step==0) cat(paste("log-posterior:",round(logpost,15),", iteration:", r, "\n",sep=""))
+      if(r%%verbose_step==0) cat(paste("log-posterior:",round(logpost,4),", iteration:", r, "\n",sep=""))
     }
   }
   if(r==maxiter) warning(paste("Convergence has not been reached after",r,"iterations."))
@@ -309,42 +309,73 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
   list(pred=prediction)
 }
 
-#' Bayesian nonparametric density estimation
+#' Variational Bayes algorithm for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model posterior mod, estimated trhough the EM algorithm
-#' @param y A vector containing the response vector
-#' @param X A n x p design matrix containing the covariates
-#' @param H The number of mixtures
-#' @param maxiter Logical: should be putted a prior on alpha?
-#' @param prior Logical: should be putted a prior on alpha?
-#' @param verbose Logical: should be putted a prior on alpha?
-#' @param tol Logical: should be putted a prior on alpha?
-#' @param random Logical: should be putted a prior on alpha?
-#' @param verbose_step Logical: should be putted a prior on alpha?
+#' The dependent logistic stick-breaking process (DLSBP) model estimated through  Variational Bayes (VB).
+#' 
+#' @param y a vector containing the response vector
+#' @param X a n x p design matrix containing the covariates
+#' @param H an integer indicating the number of mixture components
+#' @param maxiter an integer indicating the maximum number of iterations for the EM algorithm
+#' @param prior a list containing prior hyperparameters (See details for a detailed description). If not provided, the MLE is computed.
+#' @param tol a real number controlling the convergence criterium
+#' @param seed set the seed, for reproducibility since the initialization is random
+#' @param verbose Logical: Should the logposterior be displayed while the algorithm is running?
+#' 
+#' @details  The prior argument is a list which should contains the following elements
+#' \itemize{
+#' \item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
+#' \item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
+#' \item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
+#' \item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
+#' \item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+#' }
+#' 
+#' 
+#' @return The output is a list containing the following quantities
+#' \itemize{
+#' \item \verb{beta}. A (H - 1) x p matrix containing the beta coefficients.
+#' \item \verb{mu}. A H dimensional vector containing the mu coefficients.
+#' \item \verb{tau}. A H dimensional vector containing the tau coefficients.
+#' \item \verb{pred}. A n dimensional vector containing the the predicted values.
+#' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
+#' \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
+#' \item \verb{logposterior}. The logposterior of the given model at convergence.
+#' }
+#' 
+#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @examples 
+#' library(DLSBP)
+#' data(geyser)
+#' x <- geyser$waiting
+#' y <- geyser$duration
+#' X <- cbind(1,x*I(x<=68) + 68*I(x > 68),((x-68)*I(x>68))) # Predictors
+#' p <- NCOL(X)
+#' prior   <- list(b = rep(0,p),        
+#'                 B = diag(100,p), 
+#'                 mu_mu =0,            
+#'                 tau_mu = 0.001,     
+#'                 a_tau = 2,           
+#'                 b_tau = 0.001)
+#' fit_VB   <- DLSBP_VB(y=y, X=X, H=3, prior=prior, seed=99)
+#' 
 #' @export
 #' 
-DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, tol=1e-4, useEM=FALSE, verbose_step=10) {
+DLSBP_VB <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, seed=NULL, verbose = TRUE) {
+  
+  if(!is.null(seed)) set.seed(seed)
   
   # Fixed quantities
   n <- length(y)
   p <- NCOL(X)
   X <- Matrix(X)
-  log2pi <- log(2*pi)
-  
-  # In prior hyperparameters not defined, use the MLE, defined as follow
-  if (is.null(prior)) {
-    prior <- list(b = rep(0, p), 
-                  B = Diagonal(p, Inf), 
-                  mu_mu =  0, 
-                  tau_mu = 0, 
-                  a_tau = 1, 
-                  b_tau = 0)
-  }
+  verbose_step = ceiling(maxiter / 50)
+  log2pi <- log(2*pi) # Compute the logarithm of pi.
   
   # Hyperparameters
   b <- prior$b
   mu_mu  <- prior$mu_mu
-  B <- prior$B; P <- solve(B); Pb <- P%*%b
+  B <- Matrix(prior$B); P <- solve(B); Pb <- P%*%b
   tau_mu <- prior$tau_mu
   a_tau <- prior$a_tau
   b_tau <- prior$b_tau
@@ -356,51 +387,38 @@ DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, 
   ltau      <- a_tilde <- b_tilde <- numeric(H) 
   xi        <- matrix(1,n,H-1)
   
-  mu_beta    <- matrix(rnorm((H-1)*p,0,0.01), H - 1, p) # A little jitter is added
+  # Random initialization, with value very close to 0.
+  mu_beta    <- matrix(rnorm((H-1)*p,0,0.01), H - 1, p) 
   Sigma_beta <- list(); for(h in 1:(H-1)) Sigma_beta[[h]] <- Matrix(0,p,p)
   
+  # Random and uniform starting probabilities
   rho        <- matrix(runif(n*(H-1)),n,H-1)
   z          <- t(apply(rho,1,sb))
   
-  if(useEM) {
-    EM       <- DLSBP_EM(y, X, H=H, prior=prior, maxiter=500,tol=1e-4)
-    tau      <- as.numeric(EM$tau)
-    ltau     <- digamma(tau)
-    mu_tilde <- EM$mu
-    z        <- EM$z
-    mu_beta  <- as.matrix(EM$beta)
-    for(h in 1:(H-1)) {
-      rho[,h] <- plogis(as.numeric(X%*%mu_beta[h,]))
-    }
-  }
-  
+  # Initialization of different pieces of the lowerbound
   lower1 <- lower4 <- lower6 <- numeric(H)
   lower2 <- lower3 <- lower5 <- lower7 <- numeric(H-1)
-  
   lowerbound <- -Inf
   
   # VB Algorithm
   for (r in 1:maxiter) {
   
-    # Step 2,3,4: performed within the cluster.
     for (h in 1:H) {
-      # Step 2 - Logistic regressions
+      # Logistic regressions
       if (h < H) {
         
-        # Variability
         omega <- tanh(xi[,h]/2)/(2 * xi[,h])
         omega[is.nan(omega)] <- 1/4
-        #diag(Omega) <- omega
         
-        # Parameters
+        # Parameters for beta
         Sigma_beta[[h]] <- solve(crossprod(X*sqrt(omega)) + P)
         mu_beta[h, ]    <- as.numeric(Sigma_beta[[h]] %*% (crossprod(X,rho[, h] - 1/2) + Pb))
         
-        # Step 4 - Maximization of variational parameters
+        # Variational step
         xi[,h] <- sqrt(as.numeric((X %*% mu_beta[h, ])^2) + mahalanobis(X,center=0,cov=as.matrix(Sigma_beta[[h]]),inverted=TRUE))
       }
       
-      # Step 3 - Parameter updating
+      # Parameters for posterior of mu and tau
       tau_tilde[h] <- tau[h]*sum(z[,h]) + tau_mu
       mu_tilde[h]  <- (tau[h]*sum(z[,h]* y) + tau_mu*mu_mu)/tau_tilde[h]
       
@@ -411,13 +429,12 @@ DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, 
       ltau[h]   <- digamma(a_tilde[h]) - log(b_tilde[h])
     }
     
-    # Step 1 - Cluster allocation
+    # Mixture probabilities
     Variational <- Variational_step(rho, y, as.matrix(X), mu_beta, mu_tilde, tau_tilde, tau, ltau)
-    rho <- pmin(pmax(Variational$rho,1e-16),1-1e-16)
+    rho <- pmin(pmax(Variational$rho,1e-16),1-1e-16) # Added for numerical stability
     z   <- Variational$z
     
-    
-    # ---------Lowerbound computatations
+    # Lowerbound computatations
     for (h in 1:H) {
       residual   <-  y^2 - 2*y*mu_tilde[h] + mu_tilde[h]^2 + 1/tau_tilde[h]
       lower1[h]  <-  sum(z[,h]*(ltau[h]/2 - log2pi/2 - tau[h]/2*residual))
@@ -436,19 +453,24 @@ DLSBP_VB <- function(y, X, H = 4, maxiter = 1000, prior = NULL, verbose = TRUE, 
     lowerbound_new <- sum(lower1) + sum(lower2) + sum(lower3) + sum(lower4) - sum(lower5) - sum(lower6) - sum(lower7)
     
     # Break the loop at convergence
-    if(lowerbound_new - lowerbound <tol)break
+    if(lowerbound_new - lowerbound <tol){
+      cat(paste("Convergence reached after",r,"iterations."))
+      break
+    }
     
-    # Otherwise continue!
+    # Otherwise continue
     lowerbound <- lowerbound_new
     
     # Display status
     if (verbose) {
-      if(r%%verbose_step==0) cat(paste("Lower-bound:",round(lowerbound,15),", iteration:", r, "\n",sep=""))
+      if(r%%verbose_step==0) cat(paste("Lower-bound: ",round(lowerbound,4),", iteration: ", r, "\n",sep=""))
     }
   }
+  
+  if(r==maxiter) warning(paste("Convergence has not been reached after",r,"iterations."))
   
   # Output
   cluster <- apply(z,1,which.max)
   pred    <- prediction(as.matrix(X),mu_beta,mu_tilde,pmax(0,(a_tilde-1)/b_tilde))
-  list(mu_beta = mu_beta, Sigma_beta=Sigma_beta, mu_tilde = mu_tilde, tau_tilde=tau_tilde, a_tilde=a_tilde, b_tilde=b_tilde, cluster=cluster,z=z, lowerbound=lowerbound,pred=pred)
+  list(mu_beta = mu_beta, Sigma_beta=as.matrix(Sigma_beta), mu_tilde = mu_tilde, tau_tilde=tau_tilde, a_tilde=a_tilde, b_tilde=b_tilde, cluster=cluster,z=z, lowerbound=lowerbound, pred=pred)
 }
