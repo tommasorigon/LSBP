@@ -27,13 +27,14 @@ DLSBP_VB(y, X, H = 2, maxiter = 1000, prior = NULL, tol = 1e-04,
 \value{
 The output is a list containing the following quantities
 \itemize{
-\item \verb{beta}. A (H - 1) x p matrix containing the beta coefficients.
-\item \verb{mu}. A H dimensional vector containing the mu coefficients.
-\item \verb{tau}. A H dimensional vector containing the tau coefficients.
-\item \verb{pred}. A n dimensional vector containing the the predicted values.
+\item \verb{mu_beta}. A (H - 1) x p matrix containing the mean of the Gaussian variational distribution of the beta coefficients.
+\item \verb{Sigma_beta}. A list of p x p matrixes containing the covariance of the Gaussian variational distribution of the beta coefficients.
+\item \verb{mu_tilde}. A p dimensional vector containing the means of the Gaussian variational distribution for the kernel means.
+\item \verb{tau_tilde}. A p dimensional vector containing the precisions of the Gaussian variational distribution for the kernel means.
+\item \verb{a_tilde}, \verb{b_tilde}. The parameters of the gamma variational distribution for the kernel precisions.
 \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
 \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
-\item \verb{logposterior}. The logposterior of the given model at convergence.
+\item \verb{lowerbound}. The lowerbound of the DLSBP model at convergence.
 }
 }
 \description{
@@ -44,9 +45,9 @@ The prior argument is a list which should contains the following elements
 \itemize{
 \item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
 \item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
-\item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
-\item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
-\item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+\item \verb{mu_mu}. A real number representing the prior mean for the kernel means.
+\item \verb{tau_mu}. A positive number representing the precision for the kernel means.
+\item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a gamma prior distribution for the kernel precisions.
 }
 }
 \examples{
@@ -62,7 +63,7 @@ prior   <- list(b = rep(0,p),
                 tau_mu = 0.001,     
                 a_tau = 2,           
                 b_tau = 0.001)
-fit_VB   <- DLSBP_VB(y=y, X=X, H=3, prior=prior, seed=123)
+fit_VB   <- DLSBP_VB(y=y, X=X, H=3, prior=prior, seed=99)
 
 }
 \references{

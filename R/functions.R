@@ -42,7 +42,7 @@ sb <- function(nu) {
 #' \item \verb{pred}. A n dimensional vector containing the the predicted values.
 #' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
 #' \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
-#' \item \verb{logposterior}. The logposterior of the given model at convergence.
+#' \item \verb{logposterior}. The logposterior of the DLSBP model at convergence.
 #' }
 #' 
 #' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
@@ -326,21 +326,21 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
 #' \itemize{
 #' \item \verb{b}. A p dimensional vector containing the prior mean of the Gaussian beta coefficients
 #' \item \verb{B}. A p x p matrix representing the prior covariance of the Gaussian beta coefficients.
-#' \item \verb{mu_mu}. A real number representing the prior mean for the kernel mean.
-#' \item \verb{tau_mu}. A positive number representing the precision for the kernel mean.
-#' \item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a Gamma prior distribution for the kernel precision.
+#' \item \verb{mu_mu}. A real number representing the prior mean for the kernel means.
+#' \item \verb{tau_mu}. A positive number representing the precision for the kernel means.
+#' \item \verb{a_tau}, \verb{b_tau}. The hyperparameters of a gamma prior distribution for the kernel precisions.
 #' }
-#' 
 #' 
 #' @return The output is a list containing the following quantities
 #' \itemize{
-#' \item \verb{beta}. A (H - 1) x p matrix containing the beta coefficients.
-#' \item \verb{mu}. A H dimensional vector containing the mu coefficients.
-#' \item \verb{tau}. A H dimensional vector containing the tau coefficients.
-#' \item \verb{pred}. A n dimensional vector containing the the predicted values.
+#' \item \verb{mu_beta}. A (H - 1) x p matrix containing the mean of the Gaussian variational distribution of the beta coefficients.
+#' \item \verb{Sigma_beta}. A list of p x p matrixes containing the covariance of the Gaussian variational distribution of the beta coefficients.
+#' \item \verb{mu_tilde}. A p dimensional vector containing the means of the Gaussian variational distribution for the kernel means.
+#' \item \verb{tau_tilde}. A p dimensional vector containing the precisions of the Gaussian variational distribution for the kernel means.
+#' \item \verb{a_tilde}, \verb{b_tilde}. The parameters of the gamma variational distribution for the kernel precisions.
 #' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
 #' \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
-#' \item \verb{logposterior}. The logposterior of the given model at convergence.
+#' \item \verb{lowerbound}. The lowerbound of the DLSBP model at convergence.
 #' }
 #' 
 #' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
@@ -471,6 +471,5 @@ DLSBP_VB <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, seed=N
   
   # Output
   cluster <- apply(z,1,which.max)
-  pred    <- prediction(as.matrix(X),mu_beta,mu_tilde,pmax(0,(a_tilde-1)/b_tilde))
-  list(mu_beta = mu_beta, Sigma_beta=as.matrix(Sigma_beta), mu_tilde = mu_tilde, tau_tilde=tau_tilde, a_tilde=a_tilde, b_tilde=b_tilde, cluster=cluster,z=z, lowerbound=lowerbound, pred=pred)
+  list(mu_beta = mu_beta, Sigma_beta=as.matrix(Sigma_beta), mu_tilde = mu_tilde, tau_tilde=tau_tilde, a_tilde=a_tilde, b_tilde=b_tilde, cluster=cluster,z=z, lowerbound=lowerbound)
 }

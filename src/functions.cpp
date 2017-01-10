@@ -24,6 +24,7 @@ List G_update(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec 
   
   // Cycle the observations
   for(int i=0; i < n; i++) { 
+    
     // First mixture component
     nu[0]     = 1/(1+ exp(- (dot(X.row(i),beta.row(0)))));
     pi[0]     = nu[0];
@@ -76,7 +77,7 @@ List Expectation_step(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, ar
   int H = mu.n_elem;
   int n = X.n_rows;
   
-  arma::mat z(n,H);                  // Output probabilities
+  arma::mat z(n,H);                    // Output probabilities
   IntegerVector clusters = Range(1,H); // Range of possibile clusters
   arma::vec lprob(H);                  // Conditional log-probabilities
   arma::vec prob(H);                   // Conditional probabilities
@@ -90,8 +91,8 @@ List Expectation_step(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, ar
   
   // Cycle the observations
   for(int i=0; i < n; i++) { 
-    // First mixture component
     
+    // First mixture component
     nu[0]     = 1/(1+ exp(- (dot(X.row(i),beta.row(0)))));
     pi[0]     = nu[0];
     cum_nu[0] = 1-nu[0];
@@ -151,16 +152,14 @@ List Variational_step(arma::mat rho, arma::vec y, arma::mat X, arma::mat beta, a
   // Auxiliary quantities
   double eta = 0;
   arma::uvec indexes;
-  //const double log2pi = std::log(2.0 * M_PI);
-  
-  
-  for(int i=0; i < n; i++) { 
+
+ for(int i=0; i < n; i++) { 
+    
     // First loop, with h=0,1,2,...,H-2
     for(int h = 0; h < H - 1; h++) {
     // Second loop, i=0,1,2,..,n-1
     cum_nu(0) = 1;
-   
-
+  
      arma::uvec row;
      row = i;
      // Third loop, l = 0,1,...,H-1

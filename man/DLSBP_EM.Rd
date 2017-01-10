@@ -33,7 +33,7 @@ The output is a list containing the following quantities
 \item \verb{pred}. A n dimensional vector containing the the predicted values.
 \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
 \item \verb{z}. A n x H matrix containing the probabilities of belonging to each of the mixture components.
-\item \verb{logposterior}. The logposterior of the given model at convergence.
+\item \verb{logposterior}. The logposterior of the DLSBP model at convergence.
 }
 }
 \description{
