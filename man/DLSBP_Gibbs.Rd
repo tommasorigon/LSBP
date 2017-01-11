@@ -36,7 +36,7 @@ The output is a list containing the following quantities
 }
 }
 \description{
-The dependent logistic stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
+The dependent logit stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
 }
 \details{
 The prior argument is a list which should contains the following elements
@@ -66,6 +66,6 @@ fit_Gibbs   <- DLSBP_Gibbs(y=y, X=X, H=3, prior=prior, R=R,burn.in=burn.in)
 
 }
 \references{
-Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
 }
 

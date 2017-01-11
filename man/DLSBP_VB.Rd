@@ -38,7 +38,7 @@ The output is a list containing the following quantities
 }
 }
 \description{
-The dependent logistic stick-breaking process (DLSBP) model estimated through  Variational Bayes (VB).
+The dependent logit stick-breaking process (DLSBP) model estimated through  Variational Bayes (VB).
 }
 \details{
 The prior argument is a list which should contains the following elements
@@ -67,6 +67,6 @@ fit_VB   <- DLSBP_VB(y=y, X=X, H=3, prior=prior, seed=99)
 
 }
 \references{
-Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
 }
 

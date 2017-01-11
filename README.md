@@ -1,8 +1,8 @@
-# DLSBP: Dependent Logistic Stick-Breaking Process
+# DLSBP: Dependent Logit Stick-Breaking Process
 
-R functions and scripts to implement the Dependent Logistic Stick-Breaking process model of
+R functions and scripts to implement the Dependent Logit Stick-Breaking process model of
 
-* Rigon, T. and Durante, D., (2017), [Bayesian Inference via logistic stick-breaking](), ArXiv.
+* Rigon, T. and Durante, D., (2017), [Logit stick-breaking priors for Bayesian density regression](), ArXiv.
 
 The `DLSBP` package can be installed as follow
 

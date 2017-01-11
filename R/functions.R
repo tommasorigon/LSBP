@@ -13,7 +13,7 @@ sb <- function(nu) {
 
 #' EM algorithm for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model estimated trhough the E(C)M algorithm, which provides the posterior mode.
+#' The dependent logit stick-breaking process (DLSBP) model estimated trhough the E(C)M algorithm, which provides the posterior mode.
 #' 
 #' @param y a vector containing the response vector
 #' @param X a n x p design matrix containing the covariates
@@ -45,7 +45,7 @@ sb <- function(nu) {
 #' \item \verb{logposterior}. The logposterior of the DLSBP model at convergence.
 #' }
 #' 
-#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @references Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
 #' @examples 
 #' library(DLSBP)
 #' data(geyser)
@@ -164,7 +164,7 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, random
 
 #' Gibbs sampling for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
+#' The dependent logit stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
 #' 
 #' @param y a vector containing the response vector.
 #' @param X a n x p design matrix containing the covariates
@@ -194,7 +194,7 @@ DLSBP_EM <- function(y, X, H = 2, maxiter = 1000, prior = NULL, tol=1e-4, random
 #' \item \verb{pred}. A R x n matrix containing a sample from predictive distribution fore each observation at each step of the chain.
 #' }
 #' 
-#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @references Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
 #' @examples 
 #' library(DLSBP)
 #' data(geyser)
@@ -311,7 +311,7 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
 
 #' Variational Bayes algorithm for the DLSBP model
 #'
-#' The dependent logistic stick-breaking process (DLSBP) model estimated through  Variational Bayes (VB).
+#' The dependent logit stick-breaking process (DLSBP) model estimated through  Variational Bayes (VB).
 #' 
 #' @param y a vector containing the response vector
 #' @param X a n x p design matrix containing the covariates
@@ -343,7 +343,7 @@ DLSBP_Gibbs <- function(y, X, H = 2, R = 5000, burn.in = 2000, prior = NULL, ver
 #' \item \verb{lowerbound}. The lowerbound of the DLSBP model at convergence.
 #' }
 #' 
-#' @references Rigon, T. and Durante, D., (2017), Bayesian Inference via logistic stick-breaking, ArXiv.
+#' @references Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
 #' @examples 
 #' library(DLSBP)
 #' data(geyser)
