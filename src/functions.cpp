@@ -211,7 +211,6 @@ List Variational_step(arma::mat rho, arma::vec y, arma::mat X, arma::mat beta, a
 }
 
 // [[Rcpp::export]]
-
 arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
 
   // Initialization
@@ -246,4 +245,26 @@ arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
   }
 
 return pred;
+}
+
+// [[Rcpp::export]]
+arma::mat rminimum(arma::vec x, arma::vec y){
+  
+  // Initialization
+  int nx = x.n_elem;
+  int ny = y.n_elem;
+  
+  arma::mat  out(nx,ny);   // Vector with the predictions
+
+  for(int i=0; i < nx; i++) { 
+    for(int j = 0; j < ny; j++) {
+      if(x[i] < y[j]) {
+        out(i,j) = x[i];
+      }
+      else {
+        out(i,j) = y[j];
+      }
+    }
+  }
+  return out;
 }

@@ -1,6 +1,8 @@
 #'@importFrom Rcpp evalCpp sourceCpp
 #'@importFrom BayesLogit rpg.devroye
 #'@importFrom mvtnorm dmvnorm rmvnorm
+#'@importFrom fields rdist Exponential Matern RadialBasis
+#'@importFrom splines spline.des
 #'@import Matrix
 #'@useDynLib DLSBP
 
@@ -10,6 +12,7 @@ sb <- function(nu) {
   prob  <- nu * c(1,cumprod(1 - nu[-H]))
   return(prob)
 }
+
 
 #' EM algorithm for the DLSBP model
 #'

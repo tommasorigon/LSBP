@@ -17,3 +17,7 @@ prediction <- function(X, beta, mu, tau) {
     .Call('DLSBP_prediction', PACKAGE = 'DLSBP', X, beta, mu, tau)
 }
 
+rminimum <- function(x, y) {
+    .Call('DLSBP_rminimum', PACKAGE = 'DLSBP', x, y)
+}
+

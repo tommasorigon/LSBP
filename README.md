@@ -2,7 +2,7 @@
 
 R functions and scripts to implement the Dependent Logit Stick-Breaking process model of
 
-* Rigon, T. and Durante, D., (2017), [Logit stick-breaking priors for Bayesian density regression](), ArXiv.
+* Rigon, T. and Durante, D., (2017), [Logit stick-breaking priors for Bayesian density regression](https://arxiv.org/abs/1701.02969), ArXiv.
 
 The `DLSBP` package can be installed as follow
 
