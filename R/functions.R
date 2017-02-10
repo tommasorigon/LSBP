@@ -1,8 +1,6 @@
 #'@importFrom Rcpp evalCpp sourceCpp
 #'@importFrom BayesLogit rpg.devroye
 #'@importFrom mvtnorm dmvnorm rmvnorm
-#'@importFrom fields rdist Exponential Matern RadialBasis
-#'@importFrom splines spline.des
 #'@import Matrix
 #'@useDynLib DLSBP
 

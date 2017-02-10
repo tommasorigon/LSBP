@@ -68,15 +68,3 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rminimum
-arma::mat rminimum(arma::vec x, arma::vec y);
-RcppExport SEXP DLSBP_rminimum(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rminimum(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
