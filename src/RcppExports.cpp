@@ -37,26 +37,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // Variational_step
-List Variational_step(arma::mat rho, arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau_tilde, arma::vec tau, arma::vec ltau);
-RcppExport SEXP DLSBP_Variational_step(SEXP rhoSEXP, SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tau_tildeSEXP, SEXP tauSEXP, SEXP ltauSEXP) {
+List Variational_step(arma::mat rho, arma::mat linpred, arma::mat residual, arma::vec tau, arma::vec ltau);
+RcppExport SEXP DLSBP_Variational_step(SEXP rhoSEXP, SEXP linpredSEXP, SEXP residualSEXP, SEXP tauSEXP, SEXP ltauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau_tilde(tau_tildeSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type linpred(linpredSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type residual(residualSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ltau(ltauSEXP);
-    rcpp_result_gen = Rcpp::wrap(Variational_step(rho, y, X, beta, mu, tau_tilde, tau, ltau));
+    rcpp_result_gen = Rcpp::wrap(Variational_step(rho, linpred, residual, tau, ltau));
     return rcpp_result_gen;
 END_RCPP
 }
-// prediction
-arma::vec prediction(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
-RcppExport SEXP DLSBP_prediction(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
+// pred_mean
+arma::vec pred_mean(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
+RcppExport SEXP DLSBP_pred_mean(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -64,7 +61,83 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(prediction(X, beta, mu, tau));
+    rcpp_result_gen = Rcpp::wrap(pred_mean(X, beta, mu, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// predictive
+arma::vec predictive(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
+RcppExport SEXP DLSBP_predictive(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(predictive(X, beta, mu, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// G_update_multi
+List G_update_multi(arma::vec y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP DLSBP_G_update_multi(SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(G_update_multi(y, X1, X2, beta, gamma, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Expectation_step_multi
+List Expectation_step_multi(arma::vec y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP DLSBP_Expectation_step_multi(SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(Expectation_step_multi(y, X1, X2, beta, gamma, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_mean_multi
+arma::vec pred_mean_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP DLSBP_pred_mean_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_mean_multi(X1, X2, beta, gamma, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// predictive_multi
+arma::vec predictive_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP DLSBP_predictive_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    rcpp_result_gen = Rcpp::wrap(predictive_multi(X1, X2, beta, gamma, tau));
     return rcpp_result_gen;
 END_RCPP
 }

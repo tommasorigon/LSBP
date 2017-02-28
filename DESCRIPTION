@@ -5,9 +5,16 @@ Version: 0.0.1
 Date: 2017-01-10
 Author: Tommaso Rigon
 Maintainer: <tommaso.rigon@gmail.com>
-Description: Posterior inference for the Dependent Logit Stick-breaking Process (DLSBP) of Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression.
+Description: Posterior inference for the Dependent Logit Stick-breaking Process
+    (DLSBP) of Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for
+    Bayesian density regression.
 License: GPL-2
 LazyData: TRUE
-Imports: Rcpp (>= 0.12.8), RcppArmadillo (>= 0.7.600.1.0), mvtnorm, Matrix, BayesLogit (>= 0.6)
+Imports:
+    Rcpp (>= 0.12.8),
+    RcppArmadillo (>= 0.7.600.1.0),
+    Formula,
+    cluster,
+    BayesLogit (>= 0.6)
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
