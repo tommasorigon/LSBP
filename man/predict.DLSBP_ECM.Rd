@@ -2,10 +2,18 @@
 % Please edit documentation in R/prediction.R
 \name{predict.DLSBP_ECM}
 \alias{predict.DLSBP_ECM}
-\title{Hello}
+\title{Predict method for the DLSBP}
 \usage{
-\method{predict}{DLSBP_ECM}(x, newdata = NULL)
+\method{predict}{DLSBP_ECM}(object, newdata = NULL, ...)
+}
+\arguments{
+\item{object}{An object of class \verb{DLSBP_EM}.}
+
+\item{newdata}{A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.}
+}
+\value{
+The method \verb{predict.ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 }
 \description{
-Hello
+Predict method for the DLSBP estimated using the ECM algorithm.
 }

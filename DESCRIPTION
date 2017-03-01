@@ -1,8 +1,8 @@
 Package: DLSBP
 Type: Package
 Title: DLSBP: Dependent Logit Stick-Breaking Process
-Version: 0.0.1
-Date: 2017-01-10
+Version: 0.0.2
+Date: 2017-02-28
 Author: Tommaso Rigon
 Maintainer: <tommaso.rigon@gmail.com>
 Description: Posterior inference for the Dependent Logit Stick-breaking Process
@@ -11,8 +11,8 @@ Description: Posterior inference for the Dependent Logit Stick-breaking Process
 License: GPL-2
 LazyData: TRUE
 Imports:
-    Rcpp (>= 0.12.8),
-    RcppArmadillo (>= 0.7.600.1.0),
+    Rcpp (>= 0.12.9),
+    RcppArmadillo (>= 0.7.700.0.0),
     Formula,
     cluster,
     BayesLogit (>= 0.6)
