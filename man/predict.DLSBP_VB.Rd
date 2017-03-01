@@ -2,11 +2,27 @@
 % Please edit documentation in R/prediction.R
 \name{predict.DLSBP_VB}
 \alias{predict.DLSBP_VB}
-\title{Predict method for the DLSBP estimated using VB}
+\title{Predict method for the DLSBP}
 \usage{
 \method{predict}{DLSBP_VB}(object, type = "mean", R = 5000,
   newdata = NULL, ...)
 }
+\arguments{
+\item{object}{An object of class \verb{DLSBP_VB}.}
+
+\item{type}{String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.}
+
+\item{R}{An integer indicating the number of replications for the returned sample.}
+
+\item{newdata}{A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.}
+
+\item{...}{Further arguments passed to or from other methods.}
+}
 \description{
-Predict method for the DLSBP estimated using VB
+Predict method for the DLSBP estimated using the Variational Bayes algorithm.
+}
+\details{
+The method \verb{predict.DLSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
+
+If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
 }

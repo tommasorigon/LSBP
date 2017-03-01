@@ -5,8 +5,9 @@
 #' 
 #' @param object An object of class \verb{DLSBP_EM}.
 #' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
+#' @param ... Further arguments passed to or from other methods.
 #' 
-#' @return The method \verb{predict.ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
+#' @return The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 #' @export
 predict.DLSBP_ECM <- function(object, newdata=NULL,  ...) {
    if (is.null(newdata)) {
@@ -38,10 +39,12 @@ predict.DLSBP_ECM <- function(object, newdata=NULL,  ...) {
 #' Predict method for the DLSBP estimated using the Gibbs sampling algorithm.
 #' 
 #' @param object An object of class \verb{DLSBP_Gibbs}.
-#' @param type Type of prediction that has to be computed. See details.
+#' @param type String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.
 #' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
-#' @details Ciao
-#' @return The method \verb{predict.Gibbs} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame.
+#' @param ... Further arguments passed to or from other methods.
+#' @details The method \verb{predict.DLSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
+#' 
+#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
 #' @export
 predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
   if (!(type %in% c("mean", "predictive"))) 
@@ -99,9 +102,19 @@ predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
    }
 }
 
-#' Predict method for the DLSBP estimated using VB
+#' Predict method for the DLSBP
 #' 
 #' 
+#' Predict method for the DLSBP estimated using the Variational Bayes algorithm.
+#' 
+#' @param object An object of class \verb{DLSBP_VB}.
+#' @param type String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.
+#' @param R An integer indicating the number of replications for the returned sample.
+#' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
+#' @param ... Further arguments passed to or from other methods.
+#' @details The method \verb{predict.DLSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
+#' 
+#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
 #' @export
 predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, ...) {
   if (!(type %in% c("mean", "predictive"))) 

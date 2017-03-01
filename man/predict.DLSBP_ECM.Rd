@@ -10,9 +10,11 @@
 \item{object}{An object of class \verb{DLSBP_EM}.}
 
 \item{newdata}{A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.}
+
+\item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-The method \verb{predict.ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
+The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 }
 \description{
 Predict method for the DLSBP estimated using the ECM algorithm.
