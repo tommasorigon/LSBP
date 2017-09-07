@@ -1,8 +1,8 @@
 Package: DLSBP
 Type: Package
 Title: Dependent Logit Stick-Breaking Process
-Version: 0.0.2
-Date: 2017-02-28
+Version: 0.0.3
+Date: 2017-09-07
 Author: Tommaso Rigon
 Maintainer: Tommaso Rigon <tommaso.rigon@gmail.com>
 Description: Posterior inference for the Dependent Logit Stick-breaking Process

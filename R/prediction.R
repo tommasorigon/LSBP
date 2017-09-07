@@ -4,11 +4,15 @@
 #' Predict method for the DLSBP estimated using the ECM algorithm.
 #' 
 #' @param object An object of class \verb{DLSBP_EM}.
+#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="variance"} or \verb{type="cdf"}. See details.
 #' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' @return The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
+#' @details The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \verb{type="mean"}), the conditional variance (if \verb{type="variance"}) or the conditional cumulative distribution function (if \verb{type="cdf"}) at a given \verb{threshold}, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
+#' 
 #' @export
+
 predict.DLSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, ...) {
   if (!(type %in% c("mean", "variance","cdf"))) 
     stop("Please provide a valid predictive type")
@@ -62,12 +66,13 @@ predict.DLSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL,
 #' Predict method for the DLSBP estimated using the Gibbs sampling algorithm.
 #' 
 #' @param object An object of class \verb{DLSBP_Gibbs}.
-#' @param type String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.
+#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="predictive"},\verb{type="variance"} or \verb{type="cdf"}. See details.
 #' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
 #' @details The method \verb{predict.DLSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
 #' 
-#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
+#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the DLSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the DLSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
 #' @export
 predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=NULL,...) {
   if (!(type %in% c("mean", "predictive","variance","cdf"))) 
@@ -164,13 +169,14 @@ predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=
 #' Predict method for the DLSBP estimated using the Variational Bayes algorithm.
 #' 
 #' @param object An object of class \verb{DLSBP_VB}.
-#' @param type String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.
+#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="predictive"},  \verb{type="variance"} or \verb{type="cdf"}. See details.
 #' @param R An integer indicating the number of replications for the returned sample.
 #' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
 #' @details The method \verb{predict.DLSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
 #' 
-#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
+#' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the DLSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the DLSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
 #' @export
 predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, threshold=NULL, ...) {
   if (!(type %in% c("mean", "predictive","variance","cdf"))) 

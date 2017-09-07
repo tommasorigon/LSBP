@@ -10,9 +10,11 @@
 \arguments{
 \item{object}{An object of class \verb{DLSBP_Gibbs}.}
 
-\item{type}{String indicating the type of prediction, either \verb{type="mean"} or \verb{type="predictive"}. See details.}
+\item{type}{String indicating the type of prediction: \verb{type="mean"},\verb{type="predictive"},\verb{type="variance"} or \verb{type="cdf"}. See details.}
 
 \item{newdata}{A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.}
+
+\item{threshold}{Only needed if \verb{type="cdf"} is selected. See details.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -22,5 +24,5 @@ Predict method for the DLSBP estimated using the Gibbs sampling algorithm.
 \details{
 The method \verb{predict.DLSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the DLSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
 
-If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
+If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the DLSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the DLSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
 }

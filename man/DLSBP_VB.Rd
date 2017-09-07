@@ -4,8 +4,7 @@
 \alias{DLSBP_VB}
 \title{Variational Bayes algorithm for the DLSBP model}
 \usage{
-DLSBP_VB(Formula, data = NULL, H, prior, control = control_VB(),
-  verbose = TRUE)
+DLSBP_VB(Formula, data, H, prior, control = control_VB(), verbose = TRUE)
 }
 \arguments{
 \item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.}

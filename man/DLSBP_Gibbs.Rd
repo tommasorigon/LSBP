@@ -4,7 +4,7 @@
 \alias{DLSBP_Gibbs}
 \title{Gibbs sampling algorithm for the DLSBP model}
 \usage{
-DLSBP_Gibbs(Formula, data = NULL, H, prior, control = control_Gibbs(),
+DLSBP_Gibbs(Formula, data, H, prior, control = control_Gibbs(),
   verbose = TRUE)
 }
 \arguments{

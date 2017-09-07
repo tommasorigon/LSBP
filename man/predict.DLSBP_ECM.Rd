@@ -10,13 +10,17 @@
 \arguments{
 \item{object}{An object of class \verb{DLSBP_EM}.}
 
+\item{type}{String indicating the type of prediction: \verb{type="mean"},\verb{type="variance"} or \verb{type="cdf"}. See details.}
+
 \item{newdata}{A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.}
+
+\item{threshold}{Only needed if \verb{type="cdf"} is selected. See details.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
-\value{
-The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
-}
 \description{
 Predict method for the DLSBP estimated using the ECM algorithm.
+}
+\details{
+The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \verb{type="mean"}), the conditional variance (if \verb{type="variance"}) or the conditional cumulative distribution function (if \verb{type="cdf"}) at a given \verb{threshold}, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 }

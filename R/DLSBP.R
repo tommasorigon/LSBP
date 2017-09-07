@@ -154,8 +154,9 @@ prior_DLSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kerne
 #' @export
 #' 
 
-DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), verbose = TRUE) {
+DLSBP_ECM <- function(Formula, data, H, prior, control = control_ECM(), verbose = TRUE) {
    
+  if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -170,6 +171,8 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
    
    if (missing(prior)) 
       prior <- prior_DLSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
    
    # Settings
    verbose_step = 100
@@ -246,8 +249,9 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
 #' @export
 #' 
 
-DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs(), verbose = TRUE) {
+DLSBP_Gibbs <- function(Formula, data, H , prior, control = control_Gibbs(), verbose = TRUE) {
    
+   if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -265,6 +269,9 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
    
    if (missing(prior)) 
       prior <- prior_DLSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
+   
    
    if (NCOL(X1) > 1) {
       out <- DLSBP_Gibbs_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
@@ -341,8 +348,9 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
 #' @export
 #' 
 
-DLSBP_VB <- function(Formula, data = NULL, H , prior, control = control_VB(), verbose = TRUE) {
+DLSBP_VB <- function(Formula, data, H , prior, control = control_VB(), verbose = TRUE) {
    
+   if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -357,6 +365,8 @@ DLSBP_VB <- function(Formula, data = NULL, H , prior, control = control_VB(), ve
    
    if (missing(prior)) 
       prior <- prior_DLSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
    
    # Settings
    verbose_step = 100
