@@ -52,8 +52,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // pred_mean
-arma::vec pred_mean(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
-RcppExport SEXP DLSBP_pred_mean(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
+arma::vec pred_mean(arma::mat X, arma::mat beta, arma::vec mu);
+RcppExport SEXP DLSBP_pred_mean(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_mean(X, beta, mu));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_var
+arma::vec pred_var(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
+RcppExport SEXP DLSBP_pred_var(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +74,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(pred_mean(X, beta, mu, tau));
+    rcpp_result_gen = Rcpp::wrap(pred_var(X, beta, mu, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_cdf
+arma::vec pred_cdf(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau, double threshold);
+RcppExport SEXP DLSBP_pred_cdf(SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_cdf(X, beta, mu, tau, threshold));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -112,8 +140,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // pred_mean_multi
-arma::vec pred_mean_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
-RcppExport SEXP DLSBP_pred_mean_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+arma::vec pred_mean_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma);
+RcppExport SEXP DLSBP_pred_mean_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_mean_multi(X1, X2, beta, gamma));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_var_multi
+arma::vec pred_var_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP DLSBP_pred_var_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -122,7 +164,23 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(pred_mean_multi(X1, X2, beta, gamma, tau));
+    rcpp_result_gen = Rcpp::wrap(pred_var_multi(X1, X2, beta, gamma, tau));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pred_cdf_multi
+arma::vec pred_cdf_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau, double threshold);
+RcppExport SEXP DLSBP_pred_cdf_multi(SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X1(X1SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X2(X2SEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(pred_cdf_multi(X1, X2, beta, gamma, tau, threshold));
     return rcpp_result_gen;
 END_RCPP
 }

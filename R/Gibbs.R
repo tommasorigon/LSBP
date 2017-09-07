@@ -39,7 +39,7 @@ DLSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, v
       cat(paste("Starting the Gibbs sampling with R = ", R, " and burn_in = ", burn_in, ". \n", sep = ""))
    for (r in 1:(R + burn_in)) {
       
-      # Step 2 - 3: performed within the cluster.
+      # Step 2 - 4: performed within the cluster.
       for (h in 1:H) {
          if (h < H) {
             # Subsetting observations
@@ -73,7 +73,7 @@ DLSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, v
          tau[h] <- rgamma(1, a_tau + nG/2, b_tau + sum(residual^2)/2)
       }
       
-      # Cluster allocation
+      # Cluster allocation (Step 1)
       Update <- G_update(y, X, beta_mixing, mu, tau)
       G <- c(Update$G)
       G_mixt <- c(Update$G_mixt)

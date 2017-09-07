@@ -44,7 +44,7 @@ DLSBP_VB_univ <- function(y, X, H, prior, maxiter, tol, method_init, verbose, ve
       if (verbose) 
          cat("Random initialization of the VB algorithm...\n")
       # Random initialization
-      mu_mixing <- matrix(rnorm((H - 1) * p, -0.1, 0.1), H - 1, p)
+      mu_mixing <- matrix(rnorm((H - 1) * p, -0.1, 0.5), H - 1, p)
       Sigma_mixing <- array(0, c(H - 1, p, p))
       
       # Random and uniform starting probabilities

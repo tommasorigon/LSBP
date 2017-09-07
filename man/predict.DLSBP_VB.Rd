@@ -5,7 +5,7 @@
 \title{Predict method for the DLSBP}
 \usage{
 \method{predict}{DLSBP_VB}(object, type = "mean", R = 5000,
-  newdata = NULL, ...)
+  newdata = NULL, threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \verb{DLSBP_VB}.}

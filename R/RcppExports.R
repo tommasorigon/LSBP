@@ -13,8 +13,16 @@ Variational_step <- function(rho, linpred, residual, tau, ltau) {
     .Call('DLSBP_Variational_step', PACKAGE = 'DLSBP', rho, linpred, residual, tau, ltau)
 }
 
-pred_mean <- function(X, beta, mu, tau) {
-    .Call('DLSBP_pred_mean', PACKAGE = 'DLSBP', X, beta, mu, tau)
+pred_mean <- function(X, beta, mu) {
+    .Call('DLSBP_pred_mean', PACKAGE = 'DLSBP', X, beta, mu)
+}
+
+pred_var <- function(X, beta, mu, tau) {
+    .Call('DLSBP_pred_var', PACKAGE = 'DLSBP', X, beta, mu, tau)
+}
+
+pred_cdf <- function(X, beta, mu, tau, threshold) {
+    .Call('DLSBP_pred_cdf', PACKAGE = 'DLSBP', X, beta, mu, tau, threshold)
 }
 
 predictive <- function(X, beta, mu, tau) {
@@ -29,8 +37,16 @@ Expectation_step_multi <- function(y, X1, X2, beta, gamma, tau) {
     .Call('DLSBP_Expectation_step_multi', PACKAGE = 'DLSBP', y, X1, X2, beta, gamma, tau)
 }
 
-pred_mean_multi <- function(X1, X2, beta, gamma, tau) {
-    .Call('DLSBP_pred_mean_multi', PACKAGE = 'DLSBP', X1, X2, beta, gamma, tau)
+pred_mean_multi <- function(X1, X2, beta, gamma) {
+    .Call('DLSBP_pred_mean_multi', PACKAGE = 'DLSBP', X1, X2, beta, gamma)
+}
+
+pred_var_multi <- function(X1, X2, beta, gamma, tau) {
+    .Call('DLSBP_pred_var_multi', PACKAGE = 'DLSBP', X1, X2, beta, gamma, tau)
+}
+
+pred_cdf_multi <- function(X1, X2, beta, gamma, tau, threshold) {
+    .Call('DLSBP_pred_cdf_multi', PACKAGE = 'DLSBP', X1, X2, beta, gamma, tau, threshold)
 }
 
 predictive_multi <- function(X1, X2, beta, gamma, tau) {

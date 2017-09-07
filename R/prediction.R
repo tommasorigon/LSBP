@@ -9,7 +9,9 @@
 #' 
 #' @return The method \verb{predict.DLSBP_ECM} produces predicted values, obtained by evaluating the conditional mean of the DLSBP model, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 #' @export
-predict.DLSBP_ECM <- function(object, newdata=NULL,  ...) {
+predict.DLSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, ...) {
+  if (!(type %in% c("mean", "variance","cdf"))) 
+    stop("Please provide a valid predictive type")
    if (is.null(newdata)) {
       X1 <- object$data$X1
       X2 <- object$data$X2
@@ -22,14 +24,35 @@ predict.DLSBP_ECM <- function(object, newdata=NULL,  ...) {
          X2 <- model.matrix(f, data = newdata, rhs = 2)
       }
    }
-   
-   if (NCOL(X1) > 1) {
-      pred <- pred_mean_multi(X1, X2, object$param$beta_mixing, object$param$beta_kernel, object$param$tau)
+   if(type=="mean"){
+    if (NCOL(X1) > 1) {
+      pred <- pred_mean_multi(X1, X2, object$param$beta_mixing, object$param$beta_kernel)
       
-   } else {
-      # Univariate case
-      pred <- pred_mean(X2, object$param$beta_mixing, object$param$beta_kernel, object$param$tau)
+    } else {
+        # Univariate case
+        pred <- pred_mean(X2, object$param$beta_mixing, object$param$beta_kernel)
+    }
    }
+  
+  if(type=="variance"){
+    if (NCOL(X1) > 1) {
+      pred <- pred_var_multi(X1, X2, object$param$beta_mixing, object$param$beta_kernel,object$param$tau)
+      
+    } else {
+      # Univariate case
+      pred <- pred_var(X2, object$param$beta_mixing, object$param$beta_kernel,object$param$tau)
+    }
+  }
+  
+  if(type=="cdf"){
+    if (NCOL(X1) > 1) {
+      pred <- pred_cdf_multi(X1, X2, object$param$beta_mixing, object$param$beta_kernel,object$param$tau,threshold)
+      
+    } else {
+      # Univariate case
+      pred <- pred_cdf(X2, object$param$beta_mixing, object$param$beta_kernel,object$param$tau,threshold)
+    }
+  }
    return(as.numeric(pred))
 }
 
@@ -46,8 +69,8 @@ predict.DLSBP_ECM <- function(object, newdata=NULL,  ...) {
 #' 
 #' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
 #' @export
-predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
-  if (!(type %in% c("mean", "predictive"))) 
+predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=NULL,...) {
+  if (!(type %in% c("mean", "predictive","variance","cdf"))) 
     stop("Please provide a valid predictive type")
   
    if (is.null(newdata)) {
@@ -71,13 +94,13 @@ predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
          # Multivariate case
          for (r in 1:object$control$R) {
             pred_mean[r, ] <- pred_mean_multi(X1, X2, matrix(object$param$beta_mixing[r, , ],object$H-1, p_mixing), 
-              object$param$beta_kernel[r, , ], object$param$tau[r, ])
+              object$param$beta_kernel[r, , ])
          }
       } else {
          # Univariate case
          for (r in 1:object$control$R) {
             pred_mean[r, ] <- pred_mean(X2, matrix(object$param$beta_mixing[r, , ], object$H-1, p_mixing), object$param$beta_kernel[r, 
-              ], object$param$tau[r, ])
+              ])
          }
       }
       return(pred_mean)
@@ -100,6 +123,39 @@ predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
       }
       return(predictive)
    }
+   
+   if (type == "variance") {
+     variance <- matrix(0, object$control$R, n)
+     if (NCOL(X1) > 1) {
+       # Multivariate case
+       for (r in 1:object$control$R) {
+         variance[r, ] <- pred_var_multi(X1, X2, matrix(object$param$beta_mixing[r, , ],object$H-1,  p_mixing), object$param$beta_kernel[r, , ], object$param$tau[r, ])
+       }
+     } else {
+       # Univariate case
+       for (r in 1:object$control$R) {
+         variance[r, ] <- pred_var(X2, matrix(object$param$beta_mixing[r, , ],object$H-1,  p_mixing), object$param$beta_kernel[r,], object$param$tau[r, ])
+       }
+     }
+     return(variance)
+   }
+   
+   if (type == "cdf") {
+     cdf <- matrix(0, object$control$R, n)
+     if (NCOL(X1) > 1) {
+       # Multivariate case
+       for (r in 1:object$control$R) {
+         cdf[r, ] <- pred_cdf_multi(X1, X2, matrix(object$param$beta_mixing[r, , ],object$H-1,  p_mixing), object$param$beta_kernel[r, , ], object$param$tau[r, ],threshold)
+       }
+     } else {
+       # Univariate case
+       for (r in 1:object$control$R) {
+         cdf[r, ] <- pred_cdf(X2, matrix(object$param$beta_mixing[r, , ],object$H-1,  p_mixing), object$param$beta_kernel[r,], object$param$tau[r, ],threshold)
+       }
+     }
+     return(cdf)
+   }
+   
 }
 
 #' Predict method for the DLSBP
@@ -116,8 +172,8 @@ predict.DLSBP_Gibbs <- function(object, type = "mean", newdata = NULL,...) {
 #' 
 #' If \verb{type="mean"} a sample from the posterior distribution of the DLSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.
 #' @export
-predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, ...) {
-  if (!(type %in% c("mean", "predictive"))) 
+predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, threshold=NULL, ...) {
+  if (!(type %in% c("mean", "predictive","variance","cdf"))) 
     stop("Please provide a valid predictive type")
    if (is.null(newdata)) {
       X1 <- object$data$X1
@@ -171,22 +227,22 @@ predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, ..
       
    }
    
-   if (type == "mean") {
+   if(type == "mean") {
       pred <- matrix(0, R, n)
       if (NCOL(X1) > 1) {
          for (r in 1:R) {
             pred[r, ] <- pred_mean_multi(X1, X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), beta_kernel[r, 
-              , ], tau[r, ])
+              , ])
          }
       } else {
          for (r in 1:R) {
             pred[r, ] <- pred_mean(X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), beta_kernel[r, 
-              ], tau[r, ])
+              ])
          }
       }
    }
    
-   if (type == "predictive") {
+   if(type == "predictive") {
       pred <- matrix(0, R, n)
       if (NCOL(X1) > 1) {
          for (r in 1:R) {
@@ -200,5 +256,36 @@ predict.DLSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, ..
          }
       }
    }
+   
+   if(type == "variance") {
+     pred <- matrix(0, R, n)
+     if (NCOL(X1) > 1) {
+       for (r in 1:R) {
+         pred[r, ] <- pred_var_multi(X1, X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), 
+                                       beta_kernel[r, , ], tau[r, ])
+       }
+     } else {
+       for (r in 1:R) {
+         pred[r, ] <- pred_var(X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), beta_kernel[r, 
+                                                                                                     ], tau[r, ])
+       }
+     }
+   }
+   
+   if(type == "cdf") {
+     pred <- matrix(0, R, n)
+     if (NCOL(X1) > 1) {
+       for (r in 1:R) {
+         pred[r, ] <- pred_cdf_multi(X1, X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), 
+                                     beta_kernel[r, , ], tau[r, ],threshold)
+       }
+     } else {
+       for (r in 1:R) {
+         pred[r, ] <- pred_cdf(X2, matrix(beta_mixing[r, , ], object$H - 1, p_mixing), beta_kernel[r, 
+                                                                                                   ], tau[r, ], threshold)
+       }
+     }
+   }
+   
    return(pred)
 }

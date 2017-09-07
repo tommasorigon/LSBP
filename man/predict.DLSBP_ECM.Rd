@@ -4,7 +4,8 @@
 \alias{predict.DLSBP_ECM}
 \title{Predict method for the DLSBP}
 \usage{
-\method{predict}{DLSBP_ECM}(object, newdata = NULL, ...)
+\method{predict}{DLSBP_ECM}(object, type = "mean", newdata = NULL,
+  threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \verb{DLSBP_EM}.}

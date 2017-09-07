@@ -4,7 +4,8 @@
 \alias{predict.DLSBP_Gibbs}
 \title{Predict method for the DLSBP}
 \usage{
-\method{predict}{DLSBP_Gibbs}(object, type = "mean", newdata = NULL, ...)
+\method{predict}{DLSBP_Gibbs}(object, type = "mean", newdata = NULL,
+  threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \verb{DLSBP_Gibbs}.}
