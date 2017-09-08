@@ -1,4 +1,4 @@
-DLSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, verbose_step) {
+LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, verbose_step) {
    
    # Fixed quantities
    n <- length(y)
@@ -100,7 +100,7 @@ DLSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, v
    list(param = list(beta_mixing = beta_mixing_out, beta_kernel = mu_out, tau = tau_out), logposterior = logpost)
 }
 
-DLSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verbose, verbose_step) {
+LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verbose, verbose_step) {
    
    # Fixed quantities
    n <- length(y)
