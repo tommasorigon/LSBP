@@ -113,7 +113,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
    B_mixing <- prior$B_mixing
    P_mixing <- solve(B_mixing)
    Pb_mixing <- P_mixing %*% b_mixing
-   eig_B <- eigen(B_mixing)
+   eig_B    <- eigen(B_mixing)
    B_kernel <- prior$B_kernel
    P_kernel <- solve(B_kernel)
    Pb_kernel <- P_kernel %*% b_kernel

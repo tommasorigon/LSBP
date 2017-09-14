@@ -24,6 +24,9 @@ ldet <- function(x) {
   determinant(x,logarithm = TRUE)$modulus
 }
 
+
+
+
 #' Control parameters for the ECM algorithm
 #'
 #'

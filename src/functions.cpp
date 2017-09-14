@@ -332,7 +332,6 @@ arma::vec pred_cdf(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau, dou
   return cdf;
 }
 
-
 // [[Rcpp::export]]
 arma::vec predictive(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
   
@@ -373,7 +372,6 @@ arma::vec predictive(arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau){
   }
   return pred;
 }
-
 
 // [[Rcpp::export]]
 List G_update_multi(arma::vec y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau){
@@ -510,7 +508,6 @@ List Expectation_step_multi(arma::vec y, arma::mat X1, arma::mat X2, arma::mat b
   return out;
 }
 
-
 // [[Rcpp::export]]
 arma::vec pred_mean_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma){
   
@@ -633,7 +630,6 @@ arma::vec pred_cdf_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat g
   return cdf;
 }
 
-
 // [[Rcpp::export]]
 arma::vec predictive_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau){
   
@@ -674,6 +670,75 @@ arma::vec predictive_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat
   return pred;
 }
 
+// arma::mat stick_breaking(arma::mat X, arma::mat beta){
+//   
+//   // Initialization
+//   int H = beta.n_rows + 1;
+//   int n = X.n_rows;
+//   
+//   arma::mat pi(n,H);                            // Mixture weights
+//   arma::vec nu(H);                              // Stick-breaking weights
+//   arma::vec cum_nu(H);                          // Cumulate product of stick-breaking weights
+//   
+//   // Cycle the observations
+//   for(int i=0; i < n; i++) { 
+//     // First mixture component
+//     nu[0]     = 1/(1+ exp(- (dot(X.row(i),beta.row(0)))));
+//     pi(i,0)     = nu[0];
+//     cum_nu[0] = 1-nu[0];
+// 
+//     // Start from h = 1 and arrives to H - 2, that is, exclude the first and the last component
+//     for(int h = 1; h < H - 1; h++) {
+//       nu[h]      = 1/(1 + exp(- (dot(X.row(i),beta.row(h)))));
+//       pi(i,h)     = nu[h] * cum_nu[h-1];
+//       cum_nu[h]  = (1-nu[h])*cum_nu[h-1];
+//     }
+//     
+//     // Last component
+//     nu[H-1]   = 1; // Set it equal to 1.
+//     pi(i,H-1)   = nu[H-1] * cum_nu[H-2];
+// 
+//   }
+//   
+//   return pi;
+// }
 
+//' @export
+// [[Rcpp::export]]
+arma::vec LSBP_density(double y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau){
+  
+  // Initialization
+  int H = gamma.n_rows;
+  int n = X1.n_rows;
 
+  arma::vec pdf = arma::zeros<arma::vec>(n);    // Vector with the predictions
+  arma::vec pi(H);                              // Mixture weights
+  arma::vec nu(H);                              // Stick-breaking weights
+  arma::vec cum_nu(H);                          // Cumulate product of stick-breaking weights
+  
+  // Cycle the observations
+  for(int i=0; i < n; i++) { 
+    // First mixture component
+    nu[0]     = 1/(1+ exp(- (dot(X2.row(i),beta.row(0)))));
+    pi[0]     = nu[0];
+    cum_nu[0] = 1-nu[0];
+    pdf[i]    = pi[0]*R::dnorm(y, dot(X1.row(i),gamma.row(0)),sqrt(1/tau[0]),FALSE);
+    
+    
+    // Start from h = 1 and arrives to H - 2, that is, exclude the first and the last component
+    for(int h = 1; h < H - 1; h++) {
+      nu[h]      = 1/(1 + exp(- (dot(X2.row(i),beta.row(h)))));
+      pi[h]      = nu[h] * cum_nu[h-1];
+      cum_nu[h]  = (1-nu[h])*cum_nu[h-1];
+      pdf[i]     = pdf[i] + pi[h]*R::dnorm(y, dot(X1.row(i),gamma.row(h)),sqrt(1/tau[h]),FALSE);
+    }
+    
+    // Last component
+    nu[H-1]  = 1; // Set it equal to 1.
+    pi[H-1]  = nu[H-1] * cum_nu[H-2];
+    pdf[i]   = pdf[i] + pi[H-1]*R::dnorm(y, dot(X1.row(i),gamma.row(H-1)),sqrt(1/tau[H-1]),FALSE);
+  }
+  
+  return pdf;
+}
 

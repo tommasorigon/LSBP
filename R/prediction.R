@@ -200,7 +200,7 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
    beta_mixing <- array(0, c(R, object$H - 1, p_mixing))
    tau <- matrix(0, R, object$H)
    
-   # Generating te parameters
+   # Generating the parameters
    
    if (NCOL(X1) > 1) {
       beta_kernel <- array(0, c(R, object$H, p_kernel))
