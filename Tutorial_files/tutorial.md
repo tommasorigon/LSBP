@@ -18,7 +18,7 @@ library(coda)    # For MCMC analysis
 load("dde.RData") # Load the dataset in memory
 ```
 
-The `dde` dataset can be downloaded  [here](https://github.com/tommasorigon/LSBP/blob/master/dde.RData). It contains a `data.frame` having two columns: 
+The `dde` dataset can be downloaded  [here](dde.RData). It contains a `data.frame` having two columns: 
 
 * `DDE`: the level of the Dichlorodiphenyldichloroethylene.
 * `Age`: the gestational age at delivery, in days.
@@ -108,11 +108,9 @@ for(i in 1:10){
   lower_bound[i] <- fit_VB$lowerbound
 }
 
-tic()
 set.seed(which.max(lower_bound))
 fit_VB   <- LSBP_VB(model_formula, data=dde_scaled, H=H, prior=prior,
                        control_VB(tol=1e-2,method_init="random"),verbose=FALSE)
-toc()
 ```
 
 ## Posterior predictive check
