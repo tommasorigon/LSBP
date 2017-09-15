@@ -53,8 +53,11 @@ predictive_multi <- function(X1, X2, beta, gamma, tau) {
     .Call('_LSBP_predictive_multi', PACKAGE = 'LSBP', X1, X2, beta, gamma, tau)
 }
 
-#' @export
-LSBP_density <- function(y, X1, X2, beta, gamma, tau) {
-    .Call('_LSBP_LSBP_density', PACKAGE = 'LSBP', y, X1, X2, beta, gamma, tau)
+stick_breaking <- function(X, beta) {
+    .Call('_LSBP_stick_breaking', PACKAGE = 'LSBP', X, beta)
+}
+
+LSBP_density_C <- function(y, X1, X2, beta, gamma, tau) {
+    .Call('_LSBP_LSBP_density_C', PACKAGE = 'LSBP', y, X1, X2, beta, gamma, tau)
 }
 

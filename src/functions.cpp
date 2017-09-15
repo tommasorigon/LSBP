@@ -670,42 +670,42 @@ arma::vec predictive_multi(arma::mat X1, arma::mat X2, arma::mat beta, arma::mat
   return pred;
 }
 
-// arma::mat stick_breaking(arma::mat X, arma::mat beta){
-//   
-//   // Initialization
-//   int H = beta.n_rows + 1;
-//   int n = X.n_rows;
-//   
-//   arma::mat pi(n,H);                            // Mixture weights
-//   arma::vec nu(H);                              // Stick-breaking weights
-//   arma::vec cum_nu(H);                          // Cumulate product of stick-breaking weights
-//   
-//   // Cycle the observations
-//   for(int i=0; i < n; i++) { 
-//     // First mixture component
-//     nu[0]     = 1/(1+ exp(- (dot(X.row(i),beta.row(0)))));
-//     pi(i,0)     = nu[0];
-//     cum_nu[0] = 1-nu[0];
-// 
-//     // Start from h = 1 and arrives to H - 2, that is, exclude the first and the last component
-//     for(int h = 1; h < H - 1; h++) {
-//       nu[h]      = 1/(1 + exp(- (dot(X.row(i),beta.row(h)))));
-//       pi(i,h)     = nu[h] * cum_nu[h-1];
-//       cum_nu[h]  = (1-nu[h])*cum_nu[h-1];
-//     }
-//     
-//     // Last component
-//     nu[H-1]   = 1; // Set it equal to 1.
-//     pi(i,H-1)   = nu[H-1] * cum_nu[H-2];
-// 
-//   }
-//   
-//   return pi;
-// }
-
-//' @export
 // [[Rcpp::export]]
-arma::vec LSBP_density(double y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau){
+arma::mat stick_breaking(arma::mat X, arma::mat beta){
+
+  // Initialization
+  int H = beta.n_rows + 1;
+  int n = X.n_rows;
+
+  arma::mat pi(n,H);                            // Mixture weights
+  arma::vec nu(H);                              // Stick-breaking weights
+  arma::vec cum_nu(H);                          // Cumulate product of stick-breaking weights
+
+  // Cycle the observations
+  for(int i=0; i < n; i++) {
+    // First mixture component
+    nu[0]     = 1/(1+ exp(- (dot(X.row(i),beta.row(0)))));
+    pi(i,0)     = nu[0];
+    cum_nu[0] = 1-nu[0];
+
+    // Start from h = 1 and arrives to H - 2, that is, exclude the first and the last component
+    for(int h = 1; h < H - 1; h++) {
+      nu[h]      = 1/(1 + exp(- (dot(X.row(i),beta.row(h)))));
+      pi(i,h)     = nu[h] * cum_nu[h-1];
+      cum_nu[h]  = (1-nu[h])*cum_nu[h-1];
+    }
+
+    // Last component
+    nu[H-1]   = 1; // Set it equal to 1.
+    pi(i,H-1)   = nu[H-1] * cum_nu[H-2];
+
+  }
+
+  return pi;
+}
+
+// [[Rcpp::export]]
+arma::vec LSBP_density_C(double y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau){
   
   // Initialization
   int H = gamma.n_rows;

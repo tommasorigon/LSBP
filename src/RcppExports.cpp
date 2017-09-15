@@ -199,9 +199,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// LSBP_density
-arma::vec LSBP_density(double y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
-RcppExport SEXP _LSBP_LSBP_density(SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
+// stick_breaking
+arma::mat stick_breaking(arma::mat X, arma::mat beta);
+RcppExport SEXP _LSBP_stick_breaking(SEXP XSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(stick_breaking(X, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// LSBP_density_C
+arma::vec LSBP_density_C(double y, arma::mat X1, arma::mat X2, arma::mat beta, arma::mat gamma, arma::vec tau);
+RcppExport SEXP _LSBP_LSBP_density_C(SEXP ySEXP, SEXP X1SEXP, SEXP X2SEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -211,7 +223,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(LSBP_density(y, X1, X2, beta, gamma, tau));
+    rcpp_result_gen = Rcpp::wrap(LSBP_density_C(y, X1, X2, beta, gamma, tau));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -230,7 +242,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LSBP_pred_var_multi", (DL_FUNC) &_LSBP_pred_var_multi, 5},
     {"_LSBP_pred_cdf_multi", (DL_FUNC) &_LSBP_pred_cdf_multi, 6},
     {"_LSBP_predictive_multi", (DL_FUNC) &_LSBP_predictive_multi, 5},
-    {"_LSBP_LSBP_density", (DL_FUNC) &_LSBP_LSBP_density, 6},
+    {"_LSBP_stick_breaking", (DL_FUNC) &_LSBP_stick_breaking, 2},
+    {"_LSBP_LSBP_density_C", (DL_FUNC) &_LSBP_LSBP_density_C, 6},
     {NULL, NULL, 0}
 };
 

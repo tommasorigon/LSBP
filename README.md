@@ -15,4 +15,4 @@ devtools::install_github("tommasorigon/LSBP")
 
 Alternatively, install the R package from the source file `LSBP_VERSION.tar.gz` with `R CMD INSTALL LSBP_VERSION.tar.gz`. 
 
-Moreover, the file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial_files/tutorial.md) contains detailed instruction for reproducing the application of the paper.
+Moreover, the file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial/tutorial.md) contains detailed instruction for reproducing the application of the paper.

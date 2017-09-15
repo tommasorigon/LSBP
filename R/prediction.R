@@ -295,3 +295,21 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
    
    return(pred)
 }
+
+#' Predict method for the LSBP
+#' 
+#' 
+#' Predict method for the LSBP estimated using the Variational Bayes algorithm.
+#' 
+#' @param y A value of which the conditional density has to be computed
+#' @param X1 A \verb{n x p_kernel} design matrix for the kernel
+#' @param X2 A \verb{n x p_mixing} design matrix for the stick-breaking weights
+#' @param beta A \verb{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
+#' @param alpha A \verb{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
+#' @param tau A \verb{H} dimensional vector of coefficients for the kernel precision
+#' @details The function \verb{LSBP_density} evaluates the conditional density of \verb{y} given the parameters
+#' @export
+LSBP_density <- function(y, X1, X2, beta, alpha, tau){
+  LSBP_density_C(y, X1, X2, beta, alpha, tau)
+}
+
