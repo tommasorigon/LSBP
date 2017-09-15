@@ -1,15 +1,16 @@
 
-In this tutorial we describe the steps for obtaining the results of the application of the paper [Rigon and Durante, 2017](), in order to make our findings fully reproducible.
+In this tutorial we describe the steps for obtaining the results of the application of the paper [Rigon and Durante, 2017](), in order to make them fully reproducible.
 
-Note that all the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Also, the chunk of code below require the installation of the `LSBP` R package, available in this repository. 
+All the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Also, the chunk of code below require the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
 
-As a preliminary step, we load in the environment all the required libraries.
+As a preliminary step, we load on a clean the environment all the required libraries.
 
 ```r
 rm(list=ls())    # Clean the current session
 library(LSBP)    # Load the LSBP package
 library(ggplot2) # Graphical library
 library(coda)    # For MCMC analysis
+library(splines) # For computing the natural B-splines basis
 ```
 
 ## Dataset description
@@ -21,32 +22,32 @@ load("dde.RData") # Load the dataset in memory
 The `dde` dataset can be downloaded  [here](dde.RData). It contains a `data.frame` having two columns: 
 
 * `DDE`: the level of the Dichlorodiphenyldichloroethylene.
-* `Age`: the gestational age at delivery, in days.
+* `GAD`: the gestational age at delivery, in days.
 
-The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the weight of the baby, as suggested by the scatterplot shown below; the smooth lines is a loess estimate. 
+The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the gestational age at delivery, as suggested by the scatterplot shown below; the smooth line is a loess estimate. 
 
 ```r
-ggplot(data=dde, aes(x=DDE,y=Age)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() 
+ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() 
 ```
 
 ![](application_img/plot1.png)
 
 ## LSBP estimation
 
-To fit the LSBP model we first define some fixed quantities, like the number MCMC replications, the burn-in period and the upper bound for the mixture components `H`. 
+To fit the LSBP model we first define some fixed quantities, like the number MCMC replications, the burn-in period and the number of mixture components `H`. 
 
 ```r
 n         <- nrow(dde) # Number of observations
 p         <- 2         # Row and colums of the design for the kernel
 p_splines <- 5         # Number of splines components
-R         <- 30000      # Number of replications
-burn_in   <- 5000       # Burn-in period
+R         <- 30000     # Number of replications
+burn_in   <- 5000      # Burn-in period
 H         <- 5         # Number of mixture components
 ```
 
-Using the function `prior_LSBP` we can specify the prior distribution, in the correct format. Also, notice that both `Age` and `DDE` have been normalized. 
+Using the function `prior_LSBP` we can specify the prior distribution, in the correct format. Also, notice that both `GAD` and `DDE` have been normalized. 
 
-For the mixing components, we use a natural cubic splines basis with $4$ equally spaced inner knots. As a result, for each mixture component we have $5$ parameters that have to be estimated.
+For the mixing components, we use a natural cubic splines basis with $4$ equally spaced inner knots, obtained through the `ns` command of the `splines` package. As a result, for each mixture component we have $5$ parameters that have to be estimated.
 
 
 ```r
@@ -55,19 +56,18 @@ prior       <- prior_LSBP(p,p,
                       b_kernel = c(0,0), B_kernel=diag(1,p), 
                       a_tau = .1, b_tau= .1)
 
-# Creation of the scaled dataset
+# Creation of the normalized dataset
 dde_scaled  <- data.frame(scale(dde))
-Basis       <- splines::ns(dde_scaled$DDE,p_splines)
+Basis       <- ns(dde_scaled$DDE,p_splines)
 dde_scaled  <- data.frame(dde_scaled, BS=Basis)
 
 # Formula for the model
-model_formula <- Formula::as.Formula(Age ~ DDE | BS.1 + BS.2 + BS.3 + BS.4 + BS.5)
+model_formula <- Formula::as.Formula(GAD ~ DDE | BS.1 + BS.2 + BS.3 + BS.4 + BS.5)
 ```
-
 
 ### Gibbs sampling algorithm
 
-We first run the Gibbs sampling, reporting also the computing times needed on our laptop. Of course, these quantities could vary according to the performance of the computer one is using.
+We first run the Gibbs sampling, through the command `LSBP_Gibbs` of the `LSBP` package.
 
 ```r
 set.seed(10) # The seed is setted so that the Gibbs sampler is reproducible.
@@ -77,26 +77,26 @@ fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior,
 
 ### ECM algorithm
 
-In order to alleviate the issue local maxima, we run the ECM algorithm 10 times, and we select the model that reached the highest value of the log-posterior distribution. Below, the computing time for the final model is reported as well.
+In order to alleviate the issue local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
 
 ```r
-post <- rep(0,10)
+logposterior <- rep(0,10)
 for(i in 1:10){
   set.seed(i) # Every time we run the algorithm, we set a seed varying with i
   fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
                         control=control_ECM(method_init = "random"), verbose=FALSE)
-  post[i]  <- fit_ECM$logposterior
+  logposterior[i]  <- fit_ECM$logposterior
 }
 
 # Then, we run the algorithm again selecting the seed having the maximum log-posterior
-set.seed(which.max(post))
+set.seed(which.max(logposterior))
 fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
                         control=control_ECM(method_init = "random"), verbose=FALSE)
 ```
 
 ### Variational Bayes algorithm
 
-As for the ECM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we rely on a similar approach by starting the algorithm 10 times.
+As for the ECM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we start the algorithm `10` times, selecting the one having the highest lower bound.
 
 ```r
 # VB algorithm
@@ -113,7 +113,7 @@ fit_VB   <- LSBP_VB(model_formula, data=dde_scaled, H=H, prior=prior,
                        control_VB(tol=1e-2,method_init="random"),verbose=FALSE)
 ```
 
-## Posterior predictive check
+## Conditional densities
 
 We first create some auxiliary quantities that will be useful during this 
 
@@ -122,32 +122,30 @@ We first create some auxiliary quantities that will be useful during this
 DDE.points  <- (round(quantile(dde$DDE,c(0.1,0.6,0.9,0.99)),2) - mean(dde$DDE))/sd(dde$DDE)
 
 # And the correspondings design matrices
-X1           <- cbind(1,DDE.points)             # Design matrix of the kernel
-X2           <- cbind(1,splines::ns(DDE.points, # Design matrix for the mixing
+X1           <- cbind(1,DDE.points)             # Design matrix for the kernel
+X2           <- cbind(1,ns(DDE.points,          # Design matrix for the stick-breaking weights
                                     knots=attr(Basis,"knots"),
                                     Boundary.knots=attr(Basis,"Boundary.knots")))
 # Sequence for AGE and DDE
-sequenceAge    <- seq(from=min(dde_scaled$Age),to=max(dde_scaled$Age),length=100)
+sequenceGAD <- seq(from=min(dde_scaled$GAD),to=max(dde_scaled$GAD),length=100)
 sequenceDDE <- seq(from=min(dde_scaled$DDE),to=max(dde_scaled$DDE),length=100)
 
 # Create a new dataset containing the values to be predicted
-newdata     <- data.frame(Age=0, DDE=sequenceDDE, 
-                          BS= splines::ns(sequenceDDE, 
-                                          knots=attr(Basis,"knots"),
-                                          Boundary.knots=attr(Basis,"Boundary.knots")))
+newdata     <- data.frame(GAD=0, DDE=sequenceDDE, 
+                          BS= ns(sequenceDDE,knots=attr(Basis,"knots"),Boundary.knots=attr(Basis,"Boundary.knots")))
 ```
 
-In the following chunks, it is reported the code necessary for obtaining the density function for the three algorithms, using the function `LSBP_density` which evaluates the density function of a logit stick-breaking model.
+In the following chunks, it is reported the code necessary for obtaining the density function for the three algorithms, using the function `LSBP_density` of the `LSBP` package, which evaluates the density function of a logit stick-breaking model.
 
 ```r
 # Posterior density - Gibbs sampling
-pred_Gibbs <- array(0,c(R,length(sequenceAge),4))
-for(r in 1:R){
-  for(i in 1:100){
-    pred_Gibbs[r,i,] <- c(LSBP_density(sequenceAge[i],X1,X2,
+pred_Gibbs <- array(0,c(R,length(sequenceGAD),4))
+for(r in 1:R){      # Cycle over the iterations of the MCMC chain
+  for(i in 1:100){  # Cycle over the GAD grid
+    pred_Gibbs[r,i,] <- c(LSBP_density(sequenceGAD[i],X1,X2,
                           fit_Gibbs$param$beta_mixing[r,,],
                           fit_Gibbs$param$beta_kernel[r,,],
-                          fit_Gibbs$param$tau[r,]))/sd(dde$Age)
+                          fit_Gibbs$param$tau[r,]))/sd(dde$GAD)
   }
 }
 
@@ -161,12 +159,12 @@ Similarly, for the ECM algorithm we compute
 
 ```r
 # Posterior density estimate for the ECM model
-estimate_ECM <- matrix(0,length(sequenceAge),4)
-for(i in 1:100){
-  estimate_ECM[i,] <- c(LSBP_density(sequenceAge[i],X1,X2,
+estimate_ECM <- matrix(0,length(sequenceGAD),4)
+for(i in 1:100){       # Cycle over the GAD grid
+  estimate_ECM[i,] <- c(LSBP_density(sequenceGAD[i],X1,X2,
                        fit_ECM$param$beta_mixing,
                        fit_ECM$param$beta_kernel,
-                       fit_ECM$param$tau))/sd(dde$Age)
+                       fit_ECM$param$tau))/sd(dde$GAD)
 }
 
 ```
@@ -195,13 +193,13 @@ for (h in 1:H) {
 }
 
 # Posterior density - VB
-pred_VB <- array(0,c(R,length(sequenceAge),4))
-for(r in 1:R){
-  for(i in 1:100){
-    pred_VB[r,i,] <- c(LSBP_density(sequenceAge[i],X1,X2,
+pred_VB <- array(0,c(R,length(sequenceGAD),4))
+for(r in 1:R){      # Cycle over the R simulations of the previous step
+  for(i in 1:100){  # Cycle over the GAD grid
+    pred_VB[r,i,] <- c(LSBP_density(sequenceGAD[i],X1,X2,
                           fit_VB$beta_mixing_sim[r,,],
                           fit_VB$beta_kernel_sim[r,,],
-                          fit_VB$tau_sim[r,]))/sd(dde$Age)
+                          fit_VB$tau_sim[r,]))/sd(dde$GAD)
   }
 }
 
@@ -214,22 +212,22 @@ upper_VB    <- apply(pred_VB,c(2,3),function(x) quantile(x,0.975))
 The construction of the graph of the paper is as follows
 
 ```r
-# Construction of the data_frame
+# Construction of the data_frame - Notice that the values are reconducted to the original scale.
 data.plot <- data.frame(
   prediction  = c(c(estimate_Gibbs),c(estimate_ECM),c(estimate_VB)),
   lower       = c(c(lower_Gibbs),rep(NA,100*4),c(lower_VB)),
   upper       = c(c(upper_Gibbs),rep(NA,100*4),c(upper_VB)),
-  sequenceAge = rep(sequenceAge,3*4)*sd(dde$Age) + mean(dde$Age),
+  sequenceGAD = rep(sequenceGAD,3*4)*sd(dde$GAD) + mean(dde$GAD),
   DDE.points  = rep(rep(DDE.points,each=100),3)*sd(dde$DDE)+ mean(dde$DDE),
   Algorithm   = c(rep("Gibbs sampler",4*100),rep("ECM",4*100),rep("Variational Bayes",4*100))
 )
 
 
 data.plot2 <- data.frame(
-  Age = rep(c(dde$Age[which(dde$DDE < 20.505)],
-        dde$Age[which(dde$DDE >= 20.505 & dde$DDE < 41.08)],
-        dde$Age[which(dde$DDE >= 41.08 & dde$DDE < 79.6)],
-        dde$Age[which(dde$DDE > 79.6)]),3),
+  GAD = rep(c(dde$GAD[which(dde$DDE < 20.505)],
+        dde$GAD[which(dde$DDE >= 20.505 & dde$DDE < 41.08)],
+        dde$GAD[which(dde$DDE >= 41.08 & dde$DDE < 79.6)],
+        dde$GAD[which(dde$DDE > 79.6)]),3),
   DDE.points = rep(c(rep(12.57,sum(dde$DDE < 20.505)),
         rep(28.44,sum(dde$DDE >= 20.505 & dde$DDE < 41.08)),
         rep(53.72,sum(dde$DDE >= 41.08 & dde$DDE < 79.6)),
@@ -237,36 +235,36 @@ data.plot2 <- data.frame(
   Algorithm = c(rep("Gibbs sampler",nrow(dde)),rep("ECM",nrow(dde)),rep("Variational Bayes",nrow(dde)))
 )
 
-ggplot(data=data.plot) + geom_line(aes(x=sequenceAge,y=prediction,col=Algorithm)) + facet_grid(Algorithm~ DDE.points,scales="free_y") + ylab("Density") + geom_ribbon(alpha=0.2,aes(x=sequenceAge,ymin=lower,ymax=upper,fill=Algorithm))  +xlab("Gestational age at delivery") + geom_histogram(data=data.plot2,aes(x=Age,y=..density..),alpha=0.2,bins=25)
+ggplot(data=data.plot) + geom_line(aes(x=sequenceGAD,y=prediction)) + facet_grid(Algorithm~ DDE.points,scales="free_y") + ylab("Density") + geom_ribbon(alpha=0.4,aes(x=sequenceGAD,ymin=lower,ymax=upper))  +xlab("Gestational age at delivery") + geom_histogram(data=data.plot2,aes(x=GAD,y=..density..),alpha=0.2,bins=25)
 ```
 
 ![](application_img/plot2.png)
 
-## Additional graphs
+## Conditional probabilities of being under a threshold
 
-Finally, we procude here the graph concerning
-
+Finally, we produce the conditional probability of being under a threshold
 
 ```r
-gibbs_cdf <- cbind(predict(fit_Gibbs,type="cdf",threshold=(33*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_Gibbs,type="cdf",threshold=(35*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_Gibbs,type="cdf",threshold=(37*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_Gibbs,type="cdf",threshold=(40*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata))
+# Notice that the GAD and DDE values are reconducted to the original scale.
+gibbs_cdf <- cbind(predict(fit_Gibbs,type="cdf",threshold=(33*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_Gibbs,type="cdf",threshold=(35*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_Gibbs,type="cdf",threshold=(37*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_Gibbs,type="cdf",threshold=(40*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata))
 
-vb_cdf    <- cbind(predict(fit_VB,type="cdf",threshold=(33*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_VB,type="cdf",threshold=(35*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_VB,type="cdf",threshold=(37*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_VB,type="cdf",threshold=(40*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata))
+vb_cdf    <- cbind(predict(fit_VB,type="cdf",threshold=(33*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_VB,type="cdf",threshold=(35*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_VB,type="cdf",threshold=(37*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_VB,type="cdf",threshold=(40*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata))
 
-ECM_cdf   <- c(predict(fit_ECM,type="cdf",threshold=(33*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_ECM,type="cdf",threshold=(35*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_ECM,type="cdf",threshold=(37*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata),
-               predict(fit_ECM,type="cdf",threshold=(40*7 - mean(dde$Age))/sd(dde$Age),newdata=newdata))
+ECM_cdf   <- c(predict(fit_ECM,type="cdf",threshold=(33*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_ECM,type="cdf",threshold=(35*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_ECM,type="cdf",threshold=(37*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata),
+               predict(fit_ECM,type="cdf",threshold=(40*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata))
                
-data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$D) + mean(dde$DDE),
+data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$DDE) + mean(dde$DDE),
                         Algorithm=rep(c("ECM","Gibbs sampler","Variational Bayes"),each=4*length(sequenceDDE)),
                         CDF  = c(ECM_cdf,colMeans(gibbs_cdf),colMeans(vb_cdf)),
-                        Threshold = rep(rep(c("Threshold = 33","Threshold = 35","Threshold = 37","Threshold = 40"),each=length(sequenceDDE)),3),
+                        Threshold = rep(rep(c("T = 33","T = 35","T = 37","T = 40"),each=length(sequenceDDE)),3),
                         Upper = c(rep(NA,4*length(sequenceDDE)),
                                   apply(gibbs_cdf,2,function(x) quantile(x,0.975)),
                                   apply(vb_cdf,2,function(x) quantile(x,0.975))),
@@ -274,7 +272,7 @@ data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$D) + mean(dde$DDE),
                                   apply(gibbs_cdf,2,function(x) quantile(x,0.025)),
                                   apply(vb_cdf,2,function(x) quantile(x,0.025))))
 
-ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper,fill=Algorithm,col=Algorithm)) + geom_line() + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < threshold)") + geom_ribbon(alpha=0.2,col="white")
+ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper)) + geom_line() + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < T)") + geom_ribbon(alpha=0.2,col="white") 
 ```
 
 ![](application_img/plot3.png)
