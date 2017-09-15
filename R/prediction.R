@@ -296,10 +296,10 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
    return(pred)
 }
 
-#' Predict method for the LSBP
+#' Conditional density for a LSBP model
 #' 
 #' 
-#' Predict method for the LSBP estimated using the Variational Bayes algorithm.
+#' Evaluate the conditional density of a LSBP given the parameters.
 #' 
 #' @param y A value of which the conditional density has to be computed
 #' @param X1 A \verb{n x p_kernel} design matrix for the kernel
