@@ -2,7 +2,7 @@
 % Please edit documentation in R/prediction.R
 \name{LSBP_density}
 \alias{LSBP_density}
-\title{Predict method for the LSBP}
+\title{Conditional density for a LSBP model}
 \usage{
 LSBP_density(y, X1, X2, beta, alpha, tau)
 }
@@ -20,7 +20,7 @@ LSBP_density(y, X1, X2, beta, alpha, tau)
 \item{tau}{A \verb{H} dimensional vector of coefficients for the kernel precision}
 }
 \description{
-Predict method for the LSBP estimated using the Variational Bayes algorithm.
+Evaluate the conditional density of a LSBP given the parameters.
 }
 \details{
 The function \verb{LSBP_density} evaluates the conditional density of \verb{y} given the parameters
