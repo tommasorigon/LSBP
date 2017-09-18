@@ -67,7 +67,7 @@ model_formula <- Formula::as.Formula(GAD ~ DDE | BS.1 + BS.2 + BS.3 + BS.4 + BS.
 
 ### Gibbs sampling algorithm
 
-We first run the Gibbs sampling, through the command `LSBP_Gibbs` of the `LSBP` package.
+We first run the Gibbs sampling using the command `LSBP_Gibbs` of the `LSBP` package.
 
 ```r
 set.seed(10) # The seed is setted so that the Gibbs sampler is reproducible.
@@ -77,7 +77,7 @@ fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior,
 
 ### ECM algorithm
 
-In order to alleviate the issue local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
+To alleviate the issue of local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
 
 ```r
 logposterior <- rep(0,10)
@@ -96,7 +96,7 @@ fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
 
 ### Variational Bayes algorithm
 
-As for the ECM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we start the algorithm `10` times, selecting the one having the highest lower bound.
+As for the ECM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we run the algorithm `10` times, selecting the one having the highest lower bound.
 
 ```r
 # VB algorithm
