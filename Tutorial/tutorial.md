@@ -1,7 +1,9 @@
 
-In this tutorial we describe the steps for obtaining the results of the application of the paper [Rigon and Durante, 2017](), in order to make them fully reproducible.
+In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2017](), in order to make them fully reproducible.
 
-All the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Also, the chunk of code below require the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
+All the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Notice that matrix decompositions involved in this code might differ across operating systems. 
+
+The code described below requires the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
 
 As a preliminary step, we load on a clean the environment all the required libraries.
 
@@ -19,7 +21,7 @@ library(splines) # For computing the natural B-splines basis
 load("dde.RData") # Load the dataset in memory
 ```
 
-The `dde` dataset can be downloaded  [here](dde.RData). It contains a `data.frame` having two columns: 
+The `dde` dataset can be downloaded [from this respository](dde.RData). It contains a `data.frame` having two columns: 
 
 * `DDE`: the level of the Dichlorodiphenyldichloroethylene.
 * `GAD`: the gestational age at delivery, in days.
@@ -135,8 +137,9 @@ newdata     <- data.frame(GAD=0, DDE=sequenceDDE,
                           BS= ns(sequenceDDE,knots=attr(Basis,"knots"),Boundary.knots=attr(Basis,"Boundary.knots")))
 ```
 
-In the following chunks, it is reported the code necessary for obtaining the density function for the three algorithms, using the function `LSBP_density` of the `LSBP` package, which evaluates the density function of a logit stick-breaking model.
+In the following chunks it is reported the code necessary for obtaining the conditional density for the three algorithms, using the function `LSBP_density` of the `LSBP` package, which evaluates the conditional density of a logit stick-breaking model.
 
+For the Gibbs sampler, the conditional density is evaluated for different `GAD` values, for each MCMC replication.
 ```r
 # Posterior density - Gibbs sampling
 pred_Gibbs <- array(0,c(R,length(sequenceGAD),4))
@@ -155,7 +158,7 @@ lower_Gibbs    <- apply(pred_Gibbs,c(2,3),function(x) quantile(x,0.025))
 upper_Gibbs    <- apply(pred_Gibbs,c(2,3),function(x) quantile(x,0.975))
 ```
 
-Similarly, for the ECM algorithm we compute
+Similarly, for the ECM algorithm we plug-in the MAP estimate into the conditional density
 
 ```r
 # Posterior density estimate for the ECM model
@@ -169,7 +172,7 @@ for(i in 1:100){       # Cycle over the GAD grid
 
 ```
 
-Finally, we compute the posterior density also for the VB approximation. We need first to simulate values for the Variational approximation. Then, we can compute the posterior density.
+Finally, we compute the posterior conditional density also for the VB approximation. We need first to sample values from the variational approximation: we will then compute the conditional density at each sampled value, thus obtaining a sample from the conditional density.
 
 ```r
 set.seed(123)
@@ -209,7 +212,7 @@ lower_VB    <- apply(pred_VB,c(2,3),function(x) quantile(x,0.025))
 upper_VB    <- apply(pred_VB,c(2,3),function(x) quantile(x,0.975))
 ```
 
-The construction of the graph of the paper is as follows
+The construction of Figure 4 of the paper proceeds as follows
 
 ```r
 # Construction of the data_frame - Notice that the values are reconducted to the original scale.
@@ -242,7 +245,7 @@ ggplot(data=data.plot) + geom_line(aes(x=sequenceGAD,y=prediction)) + facet_grid
 
 ## Conditional probabilities of being under a threshold
 
-Finally, we produce the conditional probability of being under a threshold
+Finally, we produce the conditional probability of being under a threshold T of Figure 5 of the paper
 
 ```r
 # Notice that the GAD and DDE values are reconducted to the original scale.
