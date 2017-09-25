@@ -3,7 +3,7 @@
 #'@importFrom BayesLogit rpg.devroye
 #'@import Formula
 #'@importFrom cluster clara
-#'@useDynLib DLSBP
+#'@useDynLib LSBP
 
 sb <- function(nu) {
    nu <- c(nu, 1)
@@ -23,6 +23,9 @@ ldet <- function(x) {
   if(!is.matrix(x)) return(log(x))
   determinant(x,logarithm = TRUE)$modulus
 }
+
+
+
 
 #' Control parameters for the ECM algorithm
 #'
@@ -74,7 +77,7 @@ control_Gibbs <- function(R = 5000, burn_in = 1000, method_init = "cluster") {
       stop("Please provide a valid initialization method")
    list(R = R, burn_in = burn_in, method_init = method_init)
 }
-#' Prior specification for the DLSBP model
+#' Prior specification for the LSBP model
 #'
 #' The prior argument is a list which contains the following elements:
 #' 
@@ -89,12 +92,12 @@ control_Gibbs <- function(R = 5000, burn_in = 1000, method_init = "cluster") {
 #' 
 #' @examples 
 #' data(cars)
-#' prior  <- prior_DLSBP(p_kernel=1, p_mixing=2, a_tau=1.5 ,b_tau=1.5)
-#' fit_em <- DLSBP_ECM(dist ~ 1 | speed,data=cars, H=4, prior=prior)
+#' prior  <- prior_LSBP(p_kernel=1, p_mixing=2, a_tau=1.5 ,b_tau=1.5)
+#' fit_em <- LSBP_ECM(dist ~ 1 | speed,data=cars, H=4, prior=prior)
 #' 
 #' @export
 
-prior_DLSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kernel = diag(10^6, p_kernel), 
+prior_LSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kernel = diag(10^6, p_kernel), 
    b_mixing = rep(0, p_mixing), B_mixing = diag(10^4, p_mixing), a_tau = 0.1, b_tau = 0.1) {
    if (missing(p_kernel) | missing(p_mixing)) 
       stop("Please provide a value for p_kernel and p_mixing")
@@ -105,15 +108,15 @@ prior_DLSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kerne
 
 
 
-#' ECM algorithm for the DLSBP model
+#' ECM algorithm for the LSBP model
 #'
-#' The dependent logit stick-breaking process (DLSBP) model is estimated using the E(C)M algorithm, which provides the posterior mode.
+#' The dependent logit stick-breaking process (LSBP) model is estimated using the E(C)M algorithm, which provides the posterior mode.
 #' 
 #' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
 #' @param data A data frame containing the variables of \verb{Formula}.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[DLSBP]{prior_DLSBP}}. If missing, default prior values are used.
-#' @param control A list as returned by \code{\link[DLSBP]{control_ECM}}.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param control A list as returned by \code{\link[LSBP]{control_ECM}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
@@ -121,10 +124,10 @@ prior_DLSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kerne
 #' 
 #' If \verb{offsets} or \verb{weights} are provided in the \verb{Formula} they will be ignored in the current version.
 # 
-#' A \verb{predict} method is available and described at \code{\link[DLSBP]{predict.DLSBP_ECM}}.
+#' A \verb{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_ECM}}.
 #' 
 #' 
-#' @return The output is an object of class '\verb{DLSBP_ECM}' containing the following quantities:
+#' @return The output is an object of class '\verb{LSBP_ECM}' containing the following quantities:
 #' \itemize{
 #' \item \verb{param}. A list containing the MAP (Maximum A Posteriori), for each set of coefficients: \verb{beta_mixing,beta_kernel,tau}.
 #' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
@@ -142,20 +145,21 @@ prior_DLSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kerne
 #' data(cars)
 #' 
 #' # A model with constant kernels
-#' fit_em <- DLSBP_ECM(dist ~  1 | speed, data=cars, H=4)
+#' fit_em <- LSBP_ECM(dist ~  1 | speed, data=cars, H=4)
 #' plot(cars) 
 #' lines(cars$speed,predict(fit_em))
 #' 
 #' # A model with linear kernels
-#' fit_em <- DLSBP_ECM(dist ~ speed | speed, data=cars, H=2)
+#' fit_em <- LSBP_ECM(dist ~ speed | speed, data=cars, H=2)
 #' plot(cars) 
 #' lines(cars$speed,predict(fit_em))
 #' 
 #' @export
 #' 
 
-DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), verbose = TRUE) {
+LSBP_ECM <- function(Formula, data, H, prior, control = control_ECM(), verbose = TRUE) {
    
+  if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -169,19 +173,21 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
    p_mixing <- NCOL(X2)
    
    if (missing(prior)) 
-      prior <- prior_DLSBP(p_kernel, p_mixing)
+      prior <- prior_LSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
    
    # Settings
    verbose_step = 100
    
    if (NCOL(X1) > 1) {
-      out <- DLSBP_ECM_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, maxiter = control$maxiter, 
+      out <- LSBP_ECM_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, maxiter = control$maxiter, 
          tol = control$tol, method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    } else {
-      out <- DLSBP_ECM_univ(y = y, X = X2, H = H, prior = prior, maxiter = control$maxiter, tol = control$tol, 
+      out <- LSBP_ECM_univ(y = y, X = X2, H = H, prior = prior, maxiter = control$maxiter, tol = control$tol, 
          method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    }
-   attr(out, "class") <- "DLSBP_ECM"
+   attr(out, "class") <- "LSBP_ECM"
    out$call <- Formula
    out$data <- list(y = y, X1 = X1, X2 = X2)
    out$control <- control
@@ -191,21 +197,21 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
 }
 
 # #' @export
-# print.DLSBP_ECM <- function(x) {
+# print.LSBP_ECM <- function(x) {
 #    cat(paste("Convergence reached at logposterior: ", x$logposterior, ".\n", sep = ""))
 #    print(lapply(x$param, function(y) round(y, 2)))
 # }
 
 
-#' Gibbs sampling algorithm for the DLSBP model
+#' Gibbs sampling algorithm for the LSBP model
 #'
-#' The dependent logit stick-breaking process (DLSBP) model estimated through the Gibbs sampling.
+#' The dependent logit stick-breaking process (LSBP) model estimated through the Gibbs sampling.
 #' 
 #' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
 #' @param data A data frame containing the variables of \verb{Formula}.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[DLSBP]{prior_DLSBP}}. If missing, default prior values are used.
-#' @param control A list as returned by \code{\link[DLSBP]{control_Gibbs}}.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param control A list as returned by \code{\link[LSBP]{control_Gibbs}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
@@ -213,10 +219,10 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
 #' 
 #' If \verb{offsets} or \verb{weights} are provided in the \verb{Formula} they will be ignored in the current version.
 # 
-#' A \verb{predict} method is available and described at \code{\link[DLSBP]{predict.DLSBP_Gibbs}}.
+#' A \verb{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_Gibbs}}.
 #' 
 #' 
-#' @return The output is an object of class '\verb{DLSBP_Gibbs}' containing the following quantities:
+#' @return The output is an object of class '\verb{LSBP_Gibbs}' containing the following quantities:
 #' \itemize{
 #' \item \verb{param}. A list containing MCMC replications for each set of coefficients: \verb{beta_mixing, beta_kernel, tau}.
 #' \item \verb{logposterior}. The log-posterior of the model at each MCMC iteration.
@@ -233,12 +239,12 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
 #' data(cars)
 #' 
 #' # A model with constant kernels
-#' fit_gibbs <- DLSBP_Gibbs(dist ~  1 | speed, data=cars, H=4)
+#' fit_gibbs <- LSBP_Gibbs(dist ~  1 | speed, data=cars, H=4)
 #' plot(cars) 
 #' lines(cars$speed,colMeans(predict(fit_gibbs)))
 #' 
 #' # A model with linear kernels
-#' fit_gibbs <- DLSBP_Gibbs(dist ~ speed | speed, data=cars, H=2)
+#' fit_gibbs <- LSBP_Gibbs(dist ~ speed | speed, data=cars, H=2)
 #' plot(cars) 
 #' lines(cars$speed,colMeans(predict(fit_gibbs)))
 #' }
@@ -246,8 +252,9 @@ DLSBP_ECM <- function(Formula, data = NULL, H, prior, control = control_ECM(), v
 #' @export
 #' 
 
-DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs(), verbose = TRUE) {
+LSBP_Gibbs <- function(Formula, data, H , prior, control = control_Gibbs(), verbose = TRUE) {
    
+   if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -264,16 +271,19 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
    verbose_step = ceiling(control$R/50)
    
    if (missing(prior)) 
-      prior <- prior_DLSBP(p_kernel, p_mixing)
+      prior <- prior_LSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
+   
    
    if (NCOL(X1) > 1) {
-      out <- DLSBP_Gibbs_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
+      out <- LSBP_Gibbs_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
          method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    } else {
-      out <- DLSBP_Gibbs_univ(y = y, X = X2, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
+      out <- LSBP_Gibbs_univ(y = y, X = X2, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
          method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    }
-   attr(out, "class") <- "DLSBP_Gibbs"
+   attr(out, "class") <- "LSBP_Gibbs"
    out$call <- Formula
    out$data <- list(y = y, X1 = X1, X2 = X2)
    out$control <- control
@@ -283,7 +293,7 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
 }
 
 # #' @export
-# print.DLSBP_Gibbs <- function(x, plot = FALSE) {
+# print.LSBP_Gibbs <- function(x, plot = FALSE) {
 #    param <- x$logposterior
 #    if (plot == TRUE) 
 #       plot(param)
@@ -292,15 +302,15 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
 
 
 
-#' Variational Bayes algorithm for the DLSBP model
+#' Variational Bayes algorithm for the LSBP model
 #'
-#' The dependent logit stick-breaking process (DLSBP) model is estimated through a Variational Bayes (VB) algorithm.
+#' The dependent logit stick-breaking process (LSBP) model is estimated through a Variational Bayes (VB) algorithm.
 #' 
 #' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
 #' @param data A data frame containing the variables of \verb{Formula}.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[DLSBP]{prior_DLSBP}}. If missing, default prior values are used.
-#' @param control A list as returned by \code{\link[DLSBP]{control_VB}}.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param control A list as returned by \code{\link[LSBP]{control_VB}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
@@ -308,10 +318,10 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
 #' 
 #' If \verb{offsets} or \verb{weights} are provided in the \verb{Formula} they will be ignored in the current version.
 # 
-#' A \verb{predict} method is available and described at \code{\link[DLSBP]{predict.DLSBP_VB}}.
+#' A \verb{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_VB}}.
 #' 
 #' 
-#' @return The output is an object of class '\verb{DLSBP_VB}' containing the following quantities:
+#' @return The output is an object of class '\verb{LSBP_VB}' containing the following quantities:
 #' \itemize{
 #' \item \verb{param}. A list containing the parameters for the variational approximation of each distribution: \verb{mu_mixing, Sigma_mixing, mu_kernel, Sigma_kernel, a_tilde, b_tilde}.
 #' \item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
@@ -329,20 +339,21 @@ DLSBP_Gibbs <- function(Formula, data = NULL, H , prior, control = control_Gibbs
 #' data(cars)
 #' 
 #' # A model with constant kernels
-#' fit_vb <- DLSBP_VB(dist ~  1 | speed, data=cars, H=4)
+#' fit_vb <- LSBP_VB(dist ~  1 | speed, data=cars, H=4)
 #' plot(cars) 
 #' lines(cars$speed,colMeans(predict(fit_vb)))
 #' 
 #' # A model with linear kernels
-#' fit_vb <- DLSBP_VB(dist ~ speed | speed, data=cars, H=2)
+#' fit_vb <- LSBP_VB(dist ~ speed | speed, data=cars, H=2)
 #' plot(cars) 
 #' lines(cars$speed,colMeans(predict(fit_vb)))
 #' 
 #' @export
 #' 
 
-DLSBP_VB <- function(Formula, data = NULL, H , prior, control = control_VB(), verbose = TRUE) {
+LSBP_VB <- function(Formula, data, H , prior, control = control_VB(), verbose = TRUE) {
    
+   if(is.null(data)) stop("The data argument can not be NULL and must be specified")
    Formula <- as.Formula(Formula)
    y <- model.frame(Formula, data = data, rhs = 0)[, 1]
    X1 <- model.matrix(Formula, data = data, rhs = 1)
@@ -356,19 +367,21 @@ DLSBP_VB <- function(Formula, data = NULL, H , prior, control = control_VB(), ve
    p_mixing <- NCOL(X2)
    
    if (missing(prior)) 
-      prior <- prior_DLSBP(p_kernel, p_mixing)
+      prior <- prior_LSBP(p_kernel, p_mixing)
+   
+   if(any(c(p_kernel != ncol(prior$B_kernel),p_mixing != ncol(prior$B_mixing)))) stop("The dimension of the prior distribution must coincide with that originated from the Formula")
    
    # Settings
    verbose_step = 100
    
    if (NCOL(X1) > 1) {
-      out <- DLSBP_VB_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, maxiter = control$maxiter, 
+      out <- LSBP_VB_multi(y = y, X1 = X1, X2 = X2, H = H, prior = prior, maxiter = control$maxiter, 
          tol = control$tol, method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    } else {
-      out <- DLSBP_VB_univ(y = y, X = X2, H = H, prior = prior, maxiter = control$maxiter, tol = control$tol, 
+      out <- LSBP_VB_univ(y = y, X = X2, H = H, prior = prior, maxiter = control$maxiter, tol = control$tol, 
          method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
    }
-   attr(out, "class") <- "DLSBP_VB"
+   attr(out, "class") <- "LSBP_VB"
    out$call <- Formula
    out$data <- list(y = y, X1 = X1, X2 = X2)
    out$control <- control
@@ -379,7 +392,7 @@ DLSBP_VB <- function(Formula, data = NULL, H , prior, control = control_VB(), ve
 
 
 # #' @export
-# print.DLSBP_VB <- function(x) {
+# print.LSBP_VB <- function(x) {
 #    cat(paste("Convergence reached at lower-bound: ", x$lowerbound, ".\n", sep = ""))
 #    print(lapply(x$param, function(y) round(y, 2)))
 # }

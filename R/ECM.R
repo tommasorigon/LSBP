@@ -1,4 +1,4 @@
-DLSBP_ECM_multi <- function(y, X1, X2, H, prior, maxiter, tol, method_init, verbose, verbose_step) {
+LSBP_ECM_multi <- function(y, X1, X2, H, prior, maxiter, tol, method_init, verbose, verbose_step) {
    
    # Fixed quantities
    n <- length(y)
@@ -109,7 +109,7 @@ DLSBP_ECM_multi <- function(y, X1, X2, H, prior, maxiter, tol, method_init, verb
    return(out)
 }
 
-DLSBP_ECM_univ <- function(y, X, H, prior, maxiter, tol, method_init, verbose, verbose_step) {
+LSBP_ECM_univ <- function(y, X, H, prior, maxiter, tol, method_init, verbose, verbose_step) {
    
    # Fixed quantities
    n <- length(y)
