@@ -5,9 +5,9 @@ Version: 0.0.3
 Date: 2017-09-07
 Author: Tommaso Rigon
 Maintainer: Tommaso Rigon <tommaso.rigon@gmail.com>
-Description: Posterior inference for the Dependent Logit Stick-breaking Process
-    (LSBP) of Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for
-    Bayesian density regression.
+Description: Posterior inference for the Logit Stick-breaking Process
+    (LSBP) of Rigon, T. and Durante, D., (2017), Computational Advances
+in Bayesian Density Regression.
 License: GPL-2
 LazyData: TRUE
 Imports:
