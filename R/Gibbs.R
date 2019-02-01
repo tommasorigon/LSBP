@@ -24,6 +24,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
    beta_mixing_out <- array(0, c(R, H - 1, p))
    mu_out <- matrix(0, R, H)
    tau_out <- matrix(0, R, H)
+   nclust_out <- numeric(R)
    logpost <- numeric(R + burn_in)
    
    if (method_init == "cluster") {
@@ -89,6 +90,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
          beta_mixing_out[r - burn_in, , ] <- beta_mixing
          mu_out[r - burn_in, ] <- mu
          tau_out[r - burn_in, ] <- tau
+         nclust_out[r - burn_in,] <- length(unique(G))
       }
       
       if (verbose) {
@@ -97,7 +99,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
               sep = ""))
       }
    }
-   list(param = list(beta_mixing = beta_mixing_out, beta_kernel = mu_out, tau = tau_out), logposterior = logpost)
+   list(param = list(beta_mixing = beta_mixing_out, beta_kernel = mu_out, tau = tau_out, nclust=nclust_out), logposterior = logpost)
 }
 
 LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verbose, verbose_step) {
@@ -130,6 +132,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
    beta_mixing_out <- array(0, c(R, H - 1, p_mixing))
    beta_kernel_out <- array(0, c(R, H, p_kernel))
    tau_out <- matrix(0, R, H)
+   nclust_out <- numeric(R)
    logpost <- numeric(R + burn_in)
    
    if (method_init == "cluster") {
@@ -198,6 +201,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
          beta_mixing_out[r - burn_in, , ] <- beta_mixing
          beta_kernel_out[r - burn_in, , ] <- beta_kernel
          tau_out[r - burn_in, ] <- tau
+         nclust_out[r - burn_in,] <- length(unique(G))
       }
       
       if (verbose) {
@@ -206,5 +210,5 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
               sep = ""))
       }
    }
-   list(param = list(beta_mixing = beta_mixing_out, beta_kernel = beta_kernel_out, tau = tau_out), logposterior = logpost)
+   list(param = list(beta_mixing = beta_mixing_out, beta_kernel = beta_kernel_out, tau = tau_out, nclust=nclust_out), logposterior = logpost)
 }
