@@ -2,7 +2,7 @@
 
 The repository includes the R functions to implement the Logit Stick-Breaking process model of the paper
 
-* Rigon, T. and Durante, D., (2017), [Tractable Bayesian Density Regression via Logit Stick-Breaking Priors](https://arxiv.org/abs/1701.02969), ArXiv.
+* Rigon, T. and Durante, D., (2018), [Tractable Bayesian Density Regression via Logit Stick-Breaking Priors](https://arxiv.org/abs/1701.02969), ArXiv.
 
 The `LSBP` package can be installed by running the following commands
 
