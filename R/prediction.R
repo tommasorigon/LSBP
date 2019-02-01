@@ -313,3 +313,7 @@ LSBP_density <- function(y, X1, X2, beta, alpha, tau){
   LSBP_density_C(y, X1, X2, beta, alpha, tau)
 }
 
+#'@export
+LSBP_pois_density <- function(y, X, beta, tau){
+  LSBP_density_Pois_C(y, X, beta, tau)
+}

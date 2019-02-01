@@ -396,3 +396,65 @@ LSBP_VB <- function(Formula, data, H , prior, control = control_VB(), verbose = 
 #    cat(paste("Convergence reached at lower-bound: ", x$lowerbound, ".\n", sep = ""))
 #    print(lapply(x$param, function(y) round(y, 2)))
 # }
+
+#' Variational Bayes algorithm for the LSBP model with Poisson Kernels
+#'
+#' @export
+#' 
+
+LSBP_Pois_VB <- function(Formula, data, H , prior, control = control_VB(), verbose = TRUE) {
+  
+  if(is.null(data)) stop("The data argument can not be NULL and must be specified")
+  if (missing(prior)) stop("A prior distribution must be specified")
+  Formula <- as.formula(Formula)
+  y  <- model.frame(Formula, data = data)[, 1]
+  X  <- model.matrix(Formula, data = data)
+  
+  p_mixing <- NCOL(X)
+  
+  # Settings
+  verbose_step = 100
+  
+  out <- Poisson_VB(y = y, X = X, H = H, prior = prior, maxiter = control$maxiter, tol = control$tol, 
+                        method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
+  
+  attr(out, "class") <- "LSBP_Pois_VB"
+  out$call <- Formula
+  out$data <- list(y = y, X = X)
+  out$control <- control
+  out$H <- H
+  out$prior <- prior
+  return(out)
+}
+
+#' Gibbs sampling for the LSBP model with Poisson Kernels
+#'
+#' @export
+#' 
+#' 
+LSBP_Pois_Gibbs <- function(Formula, data, H , prior, control = control_Gibbs(), verbose = TRUE) {
+  
+  if(is.null(data)) stop("The data argument can not be NULL and must be specified")
+  if (missing(prior)) stop("A prior distribution must be specified")
+  Formula <- as.formula(Formula)
+  y  <- model.frame(Formula, data = data)[, 1]
+  X  <- model.matrix(Formula, data = data)
+  
+  p_mixing <- NCOL(X)
+  
+  # Settings
+  verbose_step = 100
+
+  out <- Poisson_Gibbs(y = y, X = X, H = H, prior = prior, R = control$R, burn_in = control$burn_in, 
+                         method_init = control$method_init, verbose = verbose, verbose_step = verbose_step)
+  
+  attr(out, "class") <- "LSBP_Pois_Gibbs"
+  out$call <- Formula
+  out$data <- list(y = y, X = X)
+  out$control <- control
+  out$H <- H
+  out$prior <- prior
+  return(out)
+}
+
+

@@ -1,4 +1,3 @@
-
 In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2017](https://arxiv.org/abs/1701.02969), in order to make them fully reproducible.
 
 All the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Notice that matrix decompositions involved in this code might differ across operating systems. 
