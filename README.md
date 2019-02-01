@@ -1,4 +1,4 @@
-# LSBP: Bayesian density regression via **L**ogit **S**tick-**B**reaking **P**rocess
+# LSBP: Bayesian density regression via **L**ogit **S**tick-**B**reaking
 
 The repository includes the R functions to implement the Logit Stick-Breaking process model of the paper
 
