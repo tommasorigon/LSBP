@@ -90,7 +90,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
          beta_mixing_out[r - burn_in, , ] <- beta_mixing
          mu_out[r - burn_in, ] <- mu
          tau_out[r - burn_in, ] <- tau
-         nclust_out[r - burn_in,] <- length(unique(G))
+         nclust_out[r - burn_in] <- length(unique(G))
       }
       
       if (verbose) {
@@ -201,7 +201,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
          beta_mixing_out[r - burn_in, , ] <- beta_mixing
          beta_kernel_out[r - burn_in, , ] <- beta_kernel
          tau_out[r - burn_in, ] <- tau
-         nclust_out[r - burn_in,] <- length(unique(G))
+         nclust_out[r - burn_in] <- length(unique(G))
       }
       
       if (verbose) {

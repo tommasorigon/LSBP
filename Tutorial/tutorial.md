@@ -1,6 +1,6 @@
-In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2017](https://arxiv.org/abs/1701.02969), in order to make them fully reproducible.
+In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2018](https://arxiv.org/abs/1701.02969), in order to make them fully reproducible.
 
-All the analyses are performed with a **MacBook Air (OS X Sierra, version 10.12.6)**, using a R version **3.4.1**. Notice that matrix decompositions involved in this code might differ across operating systems. 
+All the analyses are performed with a **MacBook Air (OS X Mojave, version 10.14.1)**, using a R version **3.5.0**. Notice that matrix decompositions involved in this code might differ across operating systems. 
 
 The code described below requires the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
 
@@ -28,14 +28,14 @@ The `dde` dataset can be downloaded [from this respository](dde.RData). It conta
 The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the gestational age at delivery, as suggested by the scatterplot shown below; the smooth line is a loess estimate. 
 
 ```r
-ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() 
+ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() ggsave("application_img/plot1.png",width=8,height=4)
 ```
 
 ![](application_img/plot1.png)
 
 ## LSBP estimation
 
-To fit the LSBP model we first define some fixed quantities, like the number MCMC replications, the burn-in period and the number of mixture components `H`. 
+To fit the `LSBP` model we first define some fixed quantities, like the number MCMC replications, the burn-in period and the number of mixture components `H`. 
 
 ```r
 n         <- nrow(dde) # Number of observations
@@ -43,7 +43,7 @@ p         <- 2         # Row and colums of the design for the kernel
 p_splines <- 5         # Number of splines components
 R         <- 30000     # Number of replications
 burn_in   <- 5000      # Burn-in period
-H         <- 5         # Number of mixture components
+H         <- 20        # Number of mixture components
 ```
 
 Using the function `prior_LSBP` we can specify the prior distribution, in the correct format. Also, notice that both `GAD` and `DDE` have been normalized. 
@@ -55,7 +55,7 @@ For the mixing components, we use a natural cubic splines basis with $4$ equally
 prior       <- prior_LSBP(p,p, 
                       b_mixing = rep(0,p_splines+1), B_mixing=diag(1,p_splines+1), 
                       b_kernel = c(0,0), B_kernel=diag(1,p), 
-                      a_tau = .1, b_tau= .1)
+                      a_tau = 1, b_tau= 1)
 
 # Creation of the normalized dataset
 dde_scaled  <- data.frame(scale(dde))
@@ -73,26 +73,26 @@ We first run the Gibbs sampling using the command `LSBP_Gibbs` of the `LSBP` pac
 ```r
 set.seed(10) # The seed is setted so that the Gibbs sampler is reproducible.
 fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior,
-                          control=control_Gibbs(R=R,burn_in=burn_in), verbose=FALSE)
+                          control=control_Gibbs(R=R,burn_in=burn_in), verbose=TRUE)
 ```
 
 ### ECM algorithm
 
-To alleviate the issue of local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
+To mitigate the issue of local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
 
 ```r
 logposterior <- rep(0,10)
 for(i in 1:10){
   set.seed(i) # Every time we run the algorithm, we set a seed varying with i
   fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
-                        control=control_ECM(method_init = "random"), verbose=FALSE)
+                        control=control_ECM(method_init = "random"), verbose=TRUE)
   logposterior[i]  <- fit_ECM$logposterior
 }
 
 # Then, we run the algorithm again selecting the seed having the maximum log-posterior
 set.seed(which.max(logposterior))
 fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
-                        control=control_ECM(method_init = "random"), verbose=FALSE)
+                        control=control_ECM(method_init = "random"), verbose=TRUE)
 ```
 
 ### Variational Bayes algorithm
@@ -105,13 +105,13 @@ lower_bound <- rep(0,10)
 for(i in 1:10){
   set.seed(i)
   fit_VB         <- LSBP_VB(model_formula, data=dde_scaled, H=H, prior=prior,
-                       control_VB(tol=1e-2,method_init="random"),verbose=FALSE)
+                       control_VB(tol=1e-2,method_init="random"),verbose=TRUE)
   lower_bound[i] <- fit_VB$lowerbound
 }
 
 set.seed(which.max(lower_bound))
 fit_VB   <- LSBP_VB(model_formula, data=dde_scaled, H=H, prior=prior,
-                       control_VB(tol=1e-2,method_init="random"),verbose=FALSE)
+                       control_VB(tol=1e-2,method_init="random"),verbose=TRUE)
 ```
 
 ## Conditional densities
@@ -168,7 +168,6 @@ for(i in 1:100){       # Cycle over the GAD grid
                        fit_ECM$param$beta_kernel,
                        fit_ECM$param$tau))/sd(dde$GAD)
 }
-
 ```
 
 Finally, we compute the posterior conditional density also for the VB approximation. We need first to sample values from the variational approximation: we will then compute the conditional density at each sampled value, thus obtaining a sample from the conditional density.
@@ -221,7 +220,7 @@ data.plot <- data.frame(
   upper       = c(c(upper_Gibbs),rep(NA,100*4),c(upper_VB)),
   sequenceGAD = rep(sequenceGAD,3*4)*sd(dde$GAD) + mean(dde$GAD),
   DDE.points  = rep(rep(DDE.points,each=100),3)*sd(dde$DDE)+ mean(dde$DDE),
-  Algorithm   = c(rep("Gibbs sampler",4*100),rep("ECM",4*100),rep("Variational Bayes",4*100))
+  Algorithm   = c(rep("Gibbs sampler",4*100),rep("EM",4*100),rep("Variational Bayes",4*100))
 )
 
 
@@ -234,7 +233,7 @@ data.plot2 <- data.frame(
         rep(28.44,sum(dde$DDE >= 20.505 & dde$DDE < 41.08)),
         rep(53.72,sum(dde$DDE >= 41.08 & dde$DDE < 79.6)),
         rep(105.47,sum(dde$DDE > 79.6))),3),
-  Algorithm = c(rep("Gibbs sampler",nrow(dde)),rep("ECM",nrow(dde)),rep("Variational Bayes",nrow(dde)))
+  Algorithm = c(rep("Gibbs sampler",nrow(dde)),rep("EM",nrow(dde)),rep("Variational Bayes",nrow(dde)))
 )
 
 ggplot(data=data.plot) + geom_line(aes(x=sequenceGAD,y=prediction)) + facet_grid(Algorithm~ DDE.points,scales="free_y") + ylab("Density") + geom_ribbon(alpha=0.4,aes(x=sequenceGAD,ymin=lower,ymax=upper))  +xlab("Gestational age at delivery") + geom_histogram(data=data.plot2,aes(x=GAD,y=..density..),alpha=0.2,bins=25) + theme_bw()
@@ -264,7 +263,7 @@ ECM_cdf   <- c(predict(fit_ECM,type="cdf",threshold=(33*7 - mean(dde$GAD))/sd(dd
                predict(fit_ECM,type="cdf",threshold=(40*7 - mean(dde$GAD))/sd(dde$GAD),newdata=newdata))
                
 data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$DDE) + mean(dde$DDE),
-                        Algorithm=rep(c("ECM","Gibbs sampler","Variational Bayes"),each=4*length(sequenceDDE)),
+                        Algorithm=rep(c("EM","Gibbs sampler","Variational Bayes"),each=4*length(sequenceDDE)),
                         CDF  = c(ECM_cdf,colMeans(gibbs_cdf),colMeans(vb_cdf)),
                         Threshold = rep(rep(c("T = 33","T = 35","T = 37","T = 40"),each=length(sequenceDDE)),3),
                         Upper = c(rep(NA,4*length(sequenceDDE)),
