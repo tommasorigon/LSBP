@@ -4,8 +4,8 @@
 \alias{predict.LSBP_VB}
 \title{Predict method for the LSBP}
 \usage{
-\method{predict}{LSBP_VB}(object, type = "mean", R = 5000, newdata = NULL,
-  threshold = NULL, ...)
+\method{predict}{LSBP_VB}(object, type = "mean", R = 5000,
+  newdata = NULL, threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \verb{LSBP_VB}.}

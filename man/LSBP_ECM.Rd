@@ -4,7 +4,8 @@
 \alias{LSBP_ECM}
 \title{ECM algorithm for the LSBP model}
 \usage{
-LSBP_ECM(Formula, data, H, prior, control = control_ECM(), verbose = TRUE)
+LSBP_ECM(Formula, data, H, prior, control = control_ECM(),
+  verbose = TRUE)
 }
 \arguments{
 \item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.}

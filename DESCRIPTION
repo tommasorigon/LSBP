@@ -12,7 +12,8 @@ LazyData: TRUE
 Imports:
     Rcpp (>= 0.12.9),
     Formula,
+    mvtnorm,
     cluster,
     BayesLogit
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

@@ -28,7 +28,8 @@ The `dde` dataset can be downloaded [from this respository](dde.RData). It conta
 The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the gestational age at delivery, as suggested by the scatterplot shown below; the smooth line is a loess estimate. 
 
 ```r
-ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() ggsave("application_img/plot1.png",width=8,height=4)
+ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() 
+ggsave("application_img/plot1.png",width=8,height=4)
 ```
 
 ![](application_img/plot1.png)
@@ -72,8 +73,8 @@ We first run the Gibbs sampling using the command `LSBP_Gibbs` of the `LSBP` pac
 
 ```r
 set.seed(10) # The seed is setted so that the Gibbs sampler is reproducible.
-fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior,
-                          control=control_Gibbs(R=R,burn_in=burn_in), verbose=TRUE)
+fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior, 
+                          control=control_Gibbs(R=R,burn_in=burn_in,method_init="random"), verbose=TRUE)
 ```
 
 ### ECM algorithm
@@ -238,8 +239,7 @@ data.plot2 <- data.frame(
 
 ggplot(data=data.plot) + geom_line(aes(x=sequenceGAD,y=prediction)) + facet_grid(Algorithm~ DDE.points,scales="free_y") + ylab("Density") + geom_ribbon(alpha=0.4,aes(x=sequenceGAD,ymin=lower,ymax=upper))  +xlab("Gestational age at delivery") + geom_histogram(data=data.plot2,aes(x=GAD,y=..density..),alpha=0.2,bins=25) + theme_bw()
 ggsave("application_img/plot2.png",width=8.8,height=4.4)
-ggsave("application_img/plot2.pdf",width=8.8,height=4.4)
-```
+``````
 
 ![](application_img/plot2.png)
 
@@ -267,7 +267,7 @@ ECM_cdf   <- c(predict(fit_ECM,type="cdf",threshold=(33*7 - mean(dde$GAD))/sd(dd
 data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$DDE) + mean(dde$DDE),
                         Algorithm=rep(c("EM","Gibbs sampler","Variational Bayes"),each=4*length(sequenceDDE)),
                         CDF  = c(ECM_cdf,colMeans(gibbs_cdf),colMeans(vb_cdf)),
-                        Threshold = rep(rep(c("T = 33","T = 35","T = 37","T = 40"),each=length(sequenceDDE)),3),
+                        Threshold = rep(rep(c("y* = 7 x 33","y* = 7 x 35","y* = 7 x 37","y* = 7 x 40"),each=length(sequenceDDE)),3),
                         Upper = c(rep(NA,4*length(sequenceDDE)),
                                   apply(gibbs_cdf,2,function(x) quantile(x,0.975)),
                                   apply(vb_cdf,2,function(x) quantile(x,0.975))),
@@ -275,7 +275,7 @@ data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$DDE) + mean(dde$DDE),
                                   apply(gibbs_cdf,2,function(x) quantile(x,0.025)),
                                   apply(vb_cdf,2,function(x) quantile(x,0.025))))
 
-ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper)) + geom_line() + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < T)") + geom_ribbon(alpha=0.2,col="white") + theme_bw()
+ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper)) + geom_line() + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < y*)") + geom_ribbon(alpha=0.2,col="white") + theme_bw()
 ggsave("application_img/plot3.png",width=8.8,height=4.4)
 ggsave("application_img/plot3.pdf",width=8.8,height=4.4)
 ```

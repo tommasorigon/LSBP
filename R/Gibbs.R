@@ -15,11 +15,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
    a_tau <- prior$a_tau
    b_tau <- prior$b_tau
    
-   # Initialization
-   tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
-   mu <- rep(median(y), H)
-   beta_mixing <- matrix(0.1, H - 1, p)  # A little jitter is added
-   
+
    # Output
    beta_mixing_out <- array(0, c(R, H - 1, p))
    mu_out <- matrix(0, R, H)
@@ -27,12 +23,24 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
    nclust_out <- numeric(R)
    logpost <- numeric(R + burn_in)
    
+   # Initialization
    if (method_init == "cluster") {
       if (verbose) 
          cat("Clustering observation before starting Gibbs sampling...\n")
       G <- clara(X, H)$clustering
+      tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
+      mu <- rep(median(y), H)
+      beta_mixing <- matrix(0.1, H - 1, p)  # A little jitter is added
+   } else if (method_init == "random") {
+     tau <- rgamma(H, a_tau, b_tau)
+     mu  <- rnorm(H, mu_mu,1/sqrt(tau_mu))
+     beta_mixing <- rmvnorm(H-1, mean = b_mixing, sigma = B_mixing) # matrix(0.1, H - 1, p)  # A little jitter is added
+     G <- G_update(y, X, beta_mixing, mu, tau)$G
    } else {
-      G <- G_update(y, X, beta_mixing, mu, tau)$G
+     tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
+     mu <- rep(median(y), H)
+     beta_mixing <- matrix(0.1, H - 1, p)  # A little jitter is added
+     G <- G_update(y, X, beta_mixing, mu, tau)$G
    }
    
    # Gibbs sampling
@@ -123,11 +131,6 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
    a_tau <- prior$a_tau
    b_tau <- prior$b_tau
    
-   # Initializing quantities
-   tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
-   beta_kernel <- cbind(rep(median(y), H), matrix(0, H, p_kernel - 1))
-   beta_mixing <- matrix(0.1, H - 1, p_mixing)
-   
    # Output
    beta_mixing_out <- array(0, c(R, H - 1, p_mixing))
    beta_kernel_out <- array(0, c(R, H, p_kernel))
@@ -135,13 +138,26 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
    nclust_out <- numeric(R)
    logpost <- numeric(R + burn_in)
    
+   # Initialization
    if (method_init == "cluster") {
-      if (verbose) 
-         cat("Clustering observation before starting Gibbs sampling...\n")
-      G <- clara(X2, H)$clustering
+     if (verbose) 
+       cat("Clustering observation before starting Gibbs sampling...\n")
+     G <- clara(X, H)$clustering
+     tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
+     beta_kernel <- cbind(rep(median(y), H), matrix(0, H, p_kernel - 1))
+     beta_mixing <- matrix(0.1, H - 1, p_mixing)
+   } else if (method_init == "random") {
+     tau <- rgamma(H, a_tau, b_tau)
+     beta_kernel <- rmvnorm(H, mean = b_kernel, sigma = B_kernel) # cbind(rep(median(y), H), matrix(0, H, p_kernel - 1))
+     beta_mixing <- rmvnorm(H-1, mean = b_mixing, sigma = B_mixing) # matrix(0.1, H - 1, p)  # A little jitter is added
+     G <- G_update_multi(y, X1, X2, beta_mixing, beta_kernel, tau)$G
    } else {
-      G <- G_update_multi(y, X1, X2, beta_mixing, beta_kernel, tau)$G
+     tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
+     beta_kernel <- cbind(rep(median(y), H), matrix(0, H, p_kernel - 1))
+     beta_mixing <- matrix(0.1, H - 1, p_mixing)
+     G <- G_update_multi(y, X1, X2, beta_mixing, beta_kernel, tau)$G
    }
+   
    
    # Gibbs sampling
    if (verbose) 

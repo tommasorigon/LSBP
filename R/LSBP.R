@@ -1,4 +1,5 @@
 #'@import stats
+#'@importFrom mvtnorm rmvnorm
 #'@importFrom Rcpp evalCpp sourceCpp
 #'@importFrom BayesLogit rpg.devroye
 #'@import Formula
