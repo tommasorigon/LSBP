@@ -59,7 +59,7 @@ LSBP_Gibbs_univ <- function(y, X, prior, H, R, burn_in, method_init, verbose, ve
             
             # Polya-gamma weights, beta_mixing coefficients
             linh <- as.numeric(Xh %*% beta_mixing[h, ])
-            omega <- rpg.devroye(num = nh, n = 1, z = linh)
+            omega <- rpg.devroye(num = nh, h = 1, z = linh)
             
             eig <- eigen(crossprod(Xh * sqrt(omega)) + P_mixing, symmetric = TRUE)
             Sigma_mixing <- crossprod(t(eig$vectors)/sqrt(eig$values))
@@ -175,7 +175,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
             
             # Polya-gamma weights, beta_mixing coefficients
             linh <- as.numeric(X2h %*% beta_mixing[h, ])
-            omega <- rpg.devroye(num = nh, n = 1, z = linh)
+            omega <- rpg.devroye(num = nh, h = 1, z = linh)
             
             eig <- eigen(crossprod(X2h * sqrt(omega)) + P_mixing, symmetric = TRUE)
             Sigma_mixing <- crossprod(t(eig$vectors)/sqrt(eig$values))

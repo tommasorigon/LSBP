@@ -1,6 +1,6 @@
 In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2018](https://arxiv.org/abs/1701.02969), in order to make them fully reproducible.
 
-All the analyses are performed with a **MacBook Air (OS X Mojave, version 10.14.1)**, using a R version **3.5.0**. Notice that matrix decompositions involved in this code might differ across operating systems. 
+All the analyses are performed with a **MacBook Pro (macOS Catalina, version 10.15.3)**, using a R version **3.6.3**. Notice that matrix decompositions involved in this code might differ across operating systems. 
 
 The code described below requires the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
 
