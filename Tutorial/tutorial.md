@@ -275,7 +275,7 @@ data.cdf  <- data.frame(DDE=rep(sequenceDDE,3*4)*sd(dde$DDE) + mean(dde$DDE),
                                   apply(gibbs_cdf,2,function(x) quantile(x,0.025)),
                                   apply(vb_cdf,2,function(x) quantile(x,0.025))))
 
-ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper)) + geom_line() + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < y*)") + geom_ribbon(alpha=0.2,col="white") + theme_bw()
+ggplot(data=data.cdf,aes(x=DDE,y=CDF,ymin=Lower,ymax=Upper)) + facet_grid(Algorithm~Threshold)+ xlab("DDE (mg/L)")+ylab("Pr(Gestational Length < y*)") + geom_ribbon(alpha=0.2,col="white") + geom_line() + theme_bw()
 ggsave("application_img/plot3.png",width=8.8,height=4.4)
 ggsave("application_img/plot3.pdf",width=8.8,height=4.4)
 ```
