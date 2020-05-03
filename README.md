@@ -1,10 +1,10 @@
-# LSBP: Bayesian density regression via **L**ogit **S**tick-**B**reaking
+# LSBP: Bayesian density regression via logit stick-breaking
 
-The repository includes the R functions to implement the Logit Stick-Breaking process model of the paper
+The repository includes the `R` functions to implement the **logit stick-breaking process model** of the paper:
 
-* Rigon, T. and Durante, D., (2018), [Tractable Bayesian Density Regression via Logit Stick-Breaking Priors](https://arxiv.org/abs/1701.02969), ArXiv.
+* Rigon, T. and Durante, D., (2020), [Tractable Bayesian Density Regression via Logit Stick-Breaking Priors](https://arxiv.org/abs/1701.02969), arXiv:1701.02969.
 
-The `LSBP` package can be installed by running the following commands
+The `LSBP` package can be installed by running the following commands:
 
 ```R
 # If the devtools R package is not already installed
@@ -13,6 +13,6 @@ The `LSBP` package can be installed by running the following commands
 devtools::install_github("tommasorigon/LSBP")
 ```
 
-Alternatively, install the R package from the source file `LSBP_VERSION.tar.gz` with `R CMD INSTALL LSBP_VERSION.tar.gz`. 
+Alternatively, install the `R` package from the source file `LSBP_VERSION.tar.gz` with `R CMD INSTALL LSBP_VERSION.tar.gz`. 
 
-The file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial/tutorial.md) contains detailed instruction for reproducing the epidemiological application of Section 4 in the paper.
+The file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial/tutorial.md) contains detailed instruction for reproducing the epidemiological application of **Section 4** in the paper.
