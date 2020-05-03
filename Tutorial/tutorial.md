@@ -166,7 +166,7 @@ upper_Gibbs    <- apply(pred_Gibbs,c(2,3),function(x) quantile(x,0.975))
 Similarly, for the **EM algorithm** we plug-in the MAP estimate into the conditional density.
 
 ```r
-# Posterior density estimate for the ECM model
+# Posterior density estimate for the EM
 estimate_ECM <- matrix(0,length(sequenceGAD),4)
 for(i in 1:100){       # Cycle over the GAD grid
   estimate_ECM[i,] <- c(LSBP_density(sequenceGAD[i],X1,X2,
