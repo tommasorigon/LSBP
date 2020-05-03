@@ -1,10 +1,10 @@
-In this tutorial we describe the steps for obtaining the results of the epidemiology application of Section 4 of the paper [Rigon and Durante, 2018](https://arxiv.org/abs/1701.02969), in order to make them fully reproducible.
+In this tutorial we describe the steps for obtaining the results of the epidemiology application in **Section 4** of the paper [Rigon and Durante (2020)](https://arxiv.org/abs/1701.02969).
 
-All the analyses are performed with a **MacBook Pro (macOS Catalina, version 10.15.3)**, using a R version **3.6.3**. Notice that matrix decompositions involved in this code might differ across operating systems. 
+All the analyses are performed with a **MacBook Pro (macOS Catalina, version 10.15.3)**, using a `R` version **3.6.3**. Notice that matrix decompositions involved in this code might differ across operating systems. 
 
-The code described below requires the installation of the `LSBP` R package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
+The code described below requires the installation of the `LSBP` package, available in this repository. See the [README](https://github.com/tommasorigon/LSBP/blob/master/README.md) for instructions on the installation.
 
-As a preliminary step, we load on a clean the environment all the required libraries.
+As a preliminary step, we load on a clean environment all the required libraries.
 
 ```r
 rm(list=ls())    # Clean the current session
@@ -25,7 +25,7 @@ The `dde` dataset can be downloaded [from this respository](dde.RData). It conta
 * `DDE`: the level of the Dichlorodiphenyldichloroethylene.
 * `GAD`: the gestational age at delivery, in days.
 
-The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the gestational age at delivery, as suggested by the scatterplot shown below; the smooth line is a loess estimate. 
+The dataset comprises a total of `2312` observations. The `DDE` is clearly related to the gestational age at delivery, as suggested by the plot shown below (the smooth line is a loess estimate). 
 
 ```r
 ggplot(data=dde, aes(x=DDE,y=GAD)) + geom_point(alpha=.5, cex=.5) + geom_smooth( method="loess", span = 1, col=1) + xlab("DDE (mg/L)") + ylab("Gestational age at delivery") + theme_bw() 
@@ -36,7 +36,7 @@ ggsave("application_img/plot1.png",width=8,height=4)
 
 ## LSBP estimation
 
-To fit the `LSBP` model we first define some fixed quantities, like the number MCMC replications, the burn-in period and the number of mixture components `H`. 
+To fit the `LSBP` model we first define some fixed quantities, such as the number MCMC replications, the burn-in period and the number of mixture components `H`. 
 
 ```r
 n         <- nrow(dde) # Number of observations
@@ -49,7 +49,7 @@ H         <- 20        # Number of mixture components
 
 Using the function `prior_LSBP` we can specify the prior distribution, in the correct format. Also, notice that both `GAD` and `DDE` have been normalized. 
 
-For the mixing components, we use a natural cubic splines basis with $4$ equally spaced inner knots, obtained through the `ns` command of the `splines` package. As a result, for each mixture component we have $5$ parameters that have to be estimated.
+For the mixing components, we use a natural cubic splines basis with 4 equally spaced inner knots, obtained through the `ns` command of the `splines` package. As a result, for each mixture component we have 5 parameters that have to be estimated.
 
 
 ```r
@@ -72,16 +72,20 @@ model_formula <- Formula::as.Formula(GAD ~ DDE | BS.1 + BS.2 + BS.3 + BS.4 + BS.
 We first run the Gibbs sampling using the command `LSBP_Gibbs` of the `LSBP` package.
 
 ```r
+# Gibbs algorithm
+
 set.seed(10) # The seed is setted so that the Gibbs sampler is reproducible.
 fit_Gibbs   <- LSBP_Gibbs(model_formula, data=dde_scaled, H=H, prior=prior, 
                           control=control_Gibbs(R=R,burn_in=burn_in,method_init="random"), verbose=TRUE)
 ```
 
-### ECM algorithm
+### EM algorithm
 
-To mitigate the issue of local maxima, we run the ECM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reached the highest value of the log-posterior distribution.
+To mitigate the issue of local maxima, we run the EM algorithm `10` times through the command `LSBP_ECM` of the `LSBP` package, and we select the model that reaches the highest value of the log-posterior distribution.
 
 ```r
+# EM algorithm
+
 logposterior <- rep(0,10)
 for(i in 1:10){
   set.seed(i) # Every time we run the algorithm, we set a seed varying with i
@@ -98,10 +102,11 @@ fit_ECM   <- LSBP_ECM(model_formula, data=dde_scaled, H=H, prior=prior,
 
 ### Variational Bayes algorithm
 
-As for the ECM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we run the algorithm `10` times, selecting the one having the highest lower bound.
+As for the EM algorithm, also the variational Bayes approach suffers the issue of local maxima. Therefore, we run the algorithm `10` times, selecting the one having the highest lower bound.
 
 ```r
 # VB algorithm
+
 lower_bound <- rep(0,10)
 for(i in 1:10){
   set.seed(i)
@@ -117,7 +122,7 @@ fit_VB   <- LSBP_VB(model_formula, data=dde_scaled, H=H, prior=prior,
 
 ## Conditional densities
 
-We first create some auxiliary quantities that will be useful during this 
+We first create some auxiliary quantities that will be useful during this analysis.
 
 ```r
 # Points for which we will evaluate
@@ -137,9 +142,9 @@ newdata     <- data.frame(GAD=0, DDE=sequenceDDE,
                           BS= ns(sequenceDDE,knots=attr(Basis,"knots"),Boundary.knots=attr(Basis,"Boundary.knots")))
 ```
 
-In the following chunks it is reported the code necessary for obtaining the conditional density for the three algorithms, using the function `LSBP_density` of the `LSBP` package, which evaluates the conditional density of a logit stick-breaking model.
+In the following boxes it is reported the code necessary for obtaining the conditional density under the three algorithms, using the function `LSBP_density` of the `LSBP` package, which evaluates the conditional density of a logit stick-breaking model.
 
-For the Gibbs sampler, the conditional density is evaluated for different `GAD` values, for each MCMC replication.
+For the **Gibbs sampler**, the conditional density is evaluated for different `GAD` values, for each MCMC replicate.
 ```r
 # Posterior density - Gibbs sampling
 pred_Gibbs <- array(0,c(R,length(sequenceGAD),4))
@@ -158,10 +163,10 @@ lower_Gibbs    <- apply(pred_Gibbs,c(2,3),function(x) quantile(x,0.025))
 upper_Gibbs    <- apply(pred_Gibbs,c(2,3),function(x) quantile(x,0.975))
 ```
 
-Similarly, for the ECM algorithm we plug-in the MAP estimate into the conditional density
+Similarly, for the **EM algorithm** we plug-in the MAP estimate into the conditional density.
 
 ```r
-# Posterior density estimate for the ECM model
+# Posterior density estimate for the EM
 estimate_ECM <- matrix(0,length(sequenceGAD),4)
 for(i in 1:100){       # Cycle over the GAD grid
   estimate_ECM[i,] <- c(LSBP_density(sequenceGAD[i],X1,X2,
@@ -171,7 +176,7 @@ for(i in 1:100){       # Cycle over the GAD grid
 }
 ```
 
-Finally, we compute the posterior conditional density also for the VB approximation. We need first to sample values from the variational approximation: we will then compute the conditional density at each sampled value, thus obtaining a sample from the conditional density.
+Finally, we compute the posterior conditional density also for the **VB approximation**. We need first to sample values from the variational approximation. Then, we compute the conditional density at each sampled value, thus obtaining a sample from the conditional density.
 
 ```r
 set.seed(123)
@@ -211,7 +216,7 @@ lower_VB    <- apply(pred_VB,c(2,3),function(x) quantile(x,0.025))
 upper_VB    <- apply(pred_VB,c(2,3),function(x) quantile(x,0.975))
 ```
 
-The construction of Figure 4 of the paper proceeds as follows
+The construction of **Figure 2** of the paper proceeds as follows.
 
 ```r
 # Construction of the data_frame - Notice that the values are reconducted to the original scale.
@@ -245,7 +250,7 @@ ggsave("application_img/plot2.png",width=8.8,height=4.4)
 
 ## Conditional probabilities of being under a threshold
 
-Finally, we produce the conditional probability of being under a threshold T of Figure 5 of the paper
+Finally, we produce the conditional probability of being under a threshold `t` of **Figure 3** in the paper.
 
 ```r
 # Notice that the GAD and DDE values are reconducted to the original scale.
