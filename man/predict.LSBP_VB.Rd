@@ -21,7 +21,7 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Predict method for the LSBP
+Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB}} function.
 }
 \details{
 The method \code{predict.LSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 

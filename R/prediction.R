@@ -168,7 +168,7 @@ predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=N
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB} function.
+#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB}} function.
 #' 
 #' @param object An object of class \code{\link[LSBP]{LSBP_VB}}.
 #' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See details.
