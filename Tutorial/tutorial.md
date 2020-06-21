@@ -1,4 +1,4 @@
-In this tutorial we describe the steps for obtaining the results of the epidemiology application in **Section 4** of the paper [Rigon and Durante (2020)](https://arxiv.org/abs/1701.02969).
+In this tutorial we describe the steps for obtaining the results of the epidemiology application in **Section 4** of the paper [Rigon and Durante (2020)](https://doi.org/10.1016/j.jspi.2020.05.009).
 
 All the analyses are performed with a **MacBook Pro (macOS Catalina, version 10.15.3)**, using a `R` version **3.6.3**. Notice that matrix decompositions involved in this code might differ across operating systems. 
 

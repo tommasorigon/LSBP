@@ -142,7 +142,7 @@ LSBP_Gibbs_multi <- function(y, X1, X2,  H, R, prior, burn_in, method_init, verb
    if (method_init == "cluster") {
      if (verbose) 
        cat("Clustering observation before starting Gibbs sampling...\n")
-     G <- clara(X, H)$clustering
+     G <- clara(X2, H)$clustering
      tau <- as.numeric(rep(1/diff(quantile(y, c(0.25, 0.75))), H))
      beta_kernel <- cbind(rep(median(y), H), matrix(0, H, p_kernel - 1))
      beta_mixing <- matrix(0.1, H - 1, p_mixing)

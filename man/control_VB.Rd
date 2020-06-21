@@ -7,15 +7,15 @@
 control_VB(maxiter = 10000, tol = 0.01, method_init = "cluster")
 }
 \arguments{
-\item{maxiter}{An integer indicating the maximum number of iterations for the ECM algorithm.}
+\item{maxiter}{An integer indicating the maximum number of iterations for the VB algorithm.}
 
-\item{tol}{A real number controlling the convergence of the algorithm. It is defined as the (absolute) difference of the log-posterior between consecutive iterations that has to be reached.}
+\item{tol}{A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_VB}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.}
 
-\item{method_init}{The initialization criterium. By default, \verb{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Another available possibility is \verb{method_init='random'}.}
+\item{method_init}{The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Another available method is \code{method_init='random'}.}
 }
 \value{
 The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
 }
 \description{
-Control parameters for the VB algorithm
+This auxiliary function can be used for specifying the technical settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_VB}} main function.
 }

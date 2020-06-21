@@ -11,25 +11,26 @@ prior_LSBP(p_kernel, p_mixing, b_kernel = rep(0, p_kernel),
 \arguments{
 \item{p_kernel, p_mixing}{The dimension of the design matrices for the kernel component and the mixing component, respectively.}
 
-\item{b_kernel}{A \verb{p_kernel} dimensional vector representing the prior mean for the  Gaussian kernel coefficients.}
+\item{b_kernel}{A \code{p_kernel} dimensional vector representing the prior mean for the  Gaussian kernel coefficients.}
 
-\item{B_kernel}{A \verb{p_kernel x p_kernel} matrix representing the prior covariance of the  Gaussian kernel coefficients.}
+\item{B_kernel}{A \code{p_kernel x p_kernel} matrix representing the prior covariance of the  Gaussian kernel coefficients.}
 
-\item{b_mixing}{A \verb{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients}
+\item{b_mixing}{A \code{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients}
 
-\item{B_mixing}{A \verb{p_mixing x p_mixing} matrix representing the prior covariance  of the Gaussian mixing coefficients.}
+\item{B_mixing}{A \code{p_mixing x p_mixing} matrix representing the prior covariance  of the Gaussian mixing coefficients.}
 
 \item{a_tau, b_tau}{The hyperparameters of a Gamma prior distribution for the kernel precision.}
 }
 \value{
-The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+The function returns a list having the same entries provided as argument. Missing arguments are filled with default values, although this is NOT recommended in general.
 }
 \description{
-The prior argument is a list which contains the following elements:
+This auxiliary function can be used for specifying the prior hyperparameters in the \code{\link[LSBP]{LSBP_Gibbs}}, \code{\link[LSBP]{LSBP_ECM}}, \code{\link[LSBP]{LSBP_VB}} main functions.
 }
 \examples{
+\dontrun{
 data(cars)
 prior  <- prior_LSBP(p_kernel=1, p_mixing=2, a_tau=1.5 ,b_tau=1.5)
-fit_em <- LSBP_ECM(dist ~ 1 | speed,data=cars, H=4, prior=prior)
-
+fit_em <- LSBP_ECM(dist ~ 1 | speed, data=cars, H=4, prior=prior)
+}
 }

@@ -9,13 +9,13 @@ control_Gibbs(R = 5000, burn_in = 1000, method_init = "cluster")
 \arguments{
 \item{R}{An integer indicating the number of replications to be computed after the burn-in.}
 
-\item{burn_in}{An integer indicating the number of replication left out as burn-in period.}
+\item{burn_in}{An integer indicating the number of replication discarded as burn-in period.}
 
-\item{method_init}{The initialization criterium. By default, \verb{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available possibilities are: \verb{method_init='random'} and \verb{method_init='deterministic'}.}
+\item{method_init}{The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available possibilities are: \code{method_init='random'} and \code{method_init='deterministic'}.}
 }
 \value{
 The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
 }
 \description{
-Control parameters for the Gibbs sampling algorithm
+This auxiliary function can be used for specifying the technical settings (i.e. number of MCMC iterations, burn-in, initialization method), of the \code{\link[LSBP]{LSBP_Gibbs}} main function.
 }

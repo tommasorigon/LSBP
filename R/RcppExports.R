@@ -5,20 +5,12 @@ G_update <- function(y, X, beta, mu, tau) {
     .Call('_LSBP_G_update', PACKAGE = 'LSBP', y, X, beta, mu, tau)
 }
 
-G_pois_update <- function(y, X, beta, tau) {
-    .Call('_LSBP_G_pois_update', PACKAGE = 'LSBP', y, X, beta, tau)
-}
-
 Expectation_step <- function(y, X, beta, mu, tau) {
     .Call('_LSBP_Expectation_step', PACKAGE = 'LSBP', y, X, beta, mu, tau)
 }
 
 Variational_step <- function(rho, linpred, residual, tau, ltau) {
     .Call('_LSBP_Variational_step', PACKAGE = 'LSBP', rho, linpred, residual, tau, ltau)
-}
-
-Variational_step_pois <- function(rho, linpred, y, tau, ltau) {
-    .Call('_LSBP_Variational_step_pois', PACKAGE = 'LSBP', rho, linpred, y, tau, ltau)
 }
 
 pred_mean <- function(X, beta, mu) {
@@ -67,9 +59,5 @@ stick_breaking <- function(X, beta) {
 
 LSBP_density_C <- function(y, X1, X2, beta, gamma, tau) {
     .Call('_LSBP_LSBP_density_C', PACKAGE = 'LSBP', y, X1, X2, beta, gamma, tau)
-}
-
-LSBP_density_Pois_C <- function(y, X, beta, tau) {
-    .Call('_LSBP_LSBP_density_Pois_C', PACKAGE = 'LSBP', y, X, beta, tau)
 }
 

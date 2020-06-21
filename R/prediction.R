@@ -12,6 +12,7 @@
 #' @details The method \verb{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \verb{type="mean"}), the conditional variance (if \verb{type="variance"}) or the conditional cumulative distribution function (if \verb{type="cdf"}) at a given \verb{threshold}, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
 #' 
 #' @export
+#' 
 
 predict.LSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, ...) {
   if (!(type %in% c("mean", "variance","cdf"))) 
@@ -74,6 +75,7 @@ predict.LSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, 
 #' 
 #' If \verb{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
 #' @export
+#' 
 predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=NULL,...) {
   if (!(type %in% c("mean", "predictive","variance","cdf"))) 
     stop("Please provide a valid predictive type")
@@ -178,6 +180,7 @@ predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=N
 #' 
 #' If \verb{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
 #' @export
+#' 
 predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, threshold=NULL, ...) {
   if (!(type %in% c("mean", "predictive","variance","cdf"))) 
     stop("Please provide a valid predictive type")
@@ -304,16 +307,13 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
 #' @param y A value of which the conditional density has to be computed
 #' @param X1 A \verb{n x p_kernel} design matrix for the kernel
 #' @param X2 A \verb{n x p_mixing} design matrix for the stick-breaking weights
-#' @param beta A \verb{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
-#' @param alpha A \verb{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
+#' @param beta_kernel A \verb{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
+#' @param beta_mixing A \verb{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
 #' @param tau A \verb{H} dimensional vector of coefficients for the kernel precision
 #' @details The function \verb{LSBP_density} evaluates the conditional density of \verb{y} given the parameters
 #' @export
-LSBP_density <- function(y, X1, X2, beta, alpha, tau){
-  LSBP_density_C(y, X1, X2, beta, alpha, tau)
+#' 
+LSBP_density <- function(y, X1, X2, beta_kernel, beta_mixing, tau){
+  LSBP_density_C(y, X1, X2, beta_kernel, beta_mixing, tau)
 }
 
-#'@export
-LSBP_pois_density <- function(y, X, beta, tau){
-  LSBP_density_Pois_C(y, X, beta, tau)
-}

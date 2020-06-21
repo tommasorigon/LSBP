@@ -7,15 +7,15 @@
 control_ECM(maxiter = 10000, tol = 0.001, method_init = "cluster")
 }
 \arguments{
-\item{maxiter}{An integer indicating the maximum number of iterations for the ECM algorithm.}
+\item{maxiter}{An integer indicating the maximum number of iterations for the \code{\link[LSBP]{LSBP_ECM}} algorithm.}
 
-\item{tol}{A real number controlling the convergence of the algorithm. It is defined as the (absolute) difference of the log-posterior between consecutive iterations that has to be reached.}
+\item{tol}{A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_ECM}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.}
 
-\item{method_init}{The initialization criterium. By default, \verb{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available possibilities are: \verb{method_init='random'} and \verb{method_init='deterministic'}.}
+\item{method_init}{The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available methods are: \code{method_init='random'} and \code{method_init='deterministic'}.}
 }
 \value{
 The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
 }
 \description{
-Control parameters for the ECM algorithm
+This auxiliary function can be used for specifying the settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_ECM}} main function.
 }

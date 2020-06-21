@@ -10,7 +10,7 @@ LSBP_ECM(Formula, data, H, prior, control = control_ECM(),
 \arguments{
 \item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.}
 
-\item{data}{A data frame containing the variables of \verb{Formula}.}
+\item{data}{A data frame containing the variables of \code{Formula}. The data frame MUST be provided.}
 
 \item{H}{An integer indicating the number of mixture components.}
 
@@ -21,29 +21,30 @@ LSBP_ECM(Formula, data, H, prior, control = control_ECM(),
 \item{verbose}{A logical value indicating whether additional information should be displayed while the algorithm is running.}
 }
 \value{
-The output is an object of class '\verb{LSBP_ECM}' containing the following quantities:
+The output is an object of class '\code{LSBP_ECM}' containing the following quantities:
 \itemize{
-\item \verb{param}. A list containing the MAP (Maximum A Posteriori), for each set of coefficients: \verb{beta_mixing,beta_kernel,tau}.
-\item \verb{cluster}. A n dimensional vector containing, for each observation, the mixture component having with the highest probability.
-\item \verb{z}. A \verb{n x H} matrix containing the probabilities of belonging to each of the mixture components, where \verb{n} denotes the number of observations.
-\item \verb{logposterior}. The log-posterior of the model at convergence.
-\item \verb{call}. The input Formula 
-\item \verb{data}. The input data frame.
-\item \verb{control}. The control list provided as input.
-\item \verb{H}. The input number of mixture components.
-\item \verb{prior}. The input prior hyperparameters.
+\item \code{param}. A list containing the maximum a posteriori, for each set of coefficients: \code{beta_mixing, beta_kernel, tau}.
+\item \code{cluster}. A \code{n} dimensional vector containing, for each observation, the mixture component having with the highest probability.
+\item \code{z}. A \code{n x H} matrix containing the probabilities of belonging to each of the mixture components, where \code{n} denotes the number of observations.
+\item \code{logposterior}. The \code{log-posterior} of the model at convergence.
+\item \code{call}. The input Formula.
+\item \code{data}. The input data frame.
+\item \code{control}. The control list provided as input.
+\item \code{H}. The input number of mixture components.
+\item \code{prior}. The input prior hyperparameters.
 }
 }
 \description{
-The dependent logit stick-breaking process (LSBP) model is estimated using the E(C)M algorithm, which provides the posterior mode.
+This function is an implementation of the expectation maximization Algorithm 2 in Rigon, T. and Durante, D. (2020).
 }
 \details{
-The \verb{Formula} specification contains the response, separated from the covariates with the symbol '\verb{~}', and two sets of covariates. The latters are separated by the symbol '\verb{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \verb{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted it is assumed that the two sets are the same.
+The \code{Formula} specification contains the response, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted then it is implicitely assumed that the two sets are the same.
 
-If \verb{offsets} or \verb{weights} are provided in the \verb{Formula} they will be ignored in the current version.
-A \verb{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_ECM}}.
+If \code{offsets} or \code{weights} are provided in the \code{Formula} they will be ignored in the current version.
+A \code{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_ECM}}.
 }
 \examples{
+\dontrun{
 data(cars)
 
 # A model with constant kernels
@@ -55,8 +56,8 @@ lines(cars$speed,predict(fit_em))
 fit_em <- LSBP_ECM(dist ~ speed | speed, data=cars, H=2)
 plot(cars) 
 lines(cars$speed,predict(fit_em))
-
+}
 }
 \references{
-Rigon, T. and Durante, D., (2017), Logit stick-breaking priors for Bayesian density regression, ArXiv.
+Rigon, T. and Durante, D., (2020), Tractable Bayesian density regression via logit stick-breaking priors. Journal of Statistical Planning and Inference.
 }

@@ -21,20 +21,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// G_pois_update
-List G_pois_update(arma::vec y, arma::mat X, arma::mat beta, arma::vec tau);
-RcppExport SEXP _LSBP_G_pois_update(SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP tauSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(G_pois_update(y, X, beta, tau));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Expectation_step
 List Expectation_step(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
 RcppExport SEXP _LSBP_Expectation_step(SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {
@@ -62,21 +48,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type ltau(ltauSEXP);
     rcpp_result_gen = Rcpp::wrap(Variational_step(rho, linpred, residual, tau, ltau));
-    return rcpp_result_gen;
-END_RCPP
-}
-// Variational_step_pois
-List Variational_step_pois(arma::mat rho, arma::mat linpred, arma::vec y, arma::vec tau, arma::vec ltau);
-RcppExport SEXP _LSBP_Variational_step_pois(SEXP rhoSEXP, SEXP linpredSEXP, SEXP ySEXP, SEXP tauSEXP, SEXP ltauSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type linpred(linpredSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type ltau(ltauSEXP);
-    rcpp_result_gen = Rcpp::wrap(Variational_step_pois(rho, linpred, y, tau, ltau));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -256,27 +227,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// LSBP_density_Pois_C
-arma::vec LSBP_density_Pois_C(double y, arma::mat X, arma::mat beta, arma::vec tau);
-RcppExport SEXP _LSBP_LSBP_density_Pois_C(SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP tauSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type y(ySEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type beta(betaSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type tau(tauSEXP);
-    rcpp_result_gen = Rcpp::wrap(LSBP_density_Pois_C(y, X, beta, tau));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_LSBP_G_update", (DL_FUNC) &_LSBP_G_update, 5},
-    {"_LSBP_G_pois_update", (DL_FUNC) &_LSBP_G_pois_update, 4},
     {"_LSBP_Expectation_step", (DL_FUNC) &_LSBP_Expectation_step, 5},
     {"_LSBP_Variational_step", (DL_FUNC) &_LSBP_Variational_step, 5},
-    {"_LSBP_Variational_step_pois", (DL_FUNC) &_LSBP_Variational_step_pois, 5},
     {"_LSBP_pred_mean", (DL_FUNC) &_LSBP_pred_mean, 3},
     {"_LSBP_pred_var", (DL_FUNC) &_LSBP_pred_var, 4},
     {"_LSBP_pred_cdf", (DL_FUNC) &_LSBP_pred_cdf, 5},
@@ -289,7 +244,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LSBP_predictive_multi", (DL_FUNC) &_LSBP_predictive_multi, 5},
     {"_LSBP_stick_breaking", (DL_FUNC) &_LSBP_stick_breaking, 2},
     {"_LSBP_LSBP_density_C", (DL_FUNC) &_LSBP_LSBP_density_C, 6},
-    {"_LSBP_LSBP_density_Pois_C", (DL_FUNC) &_LSBP_LSBP_density_Pois_C, 4},
     {NULL, NULL, 0}
 };
 
