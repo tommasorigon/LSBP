@@ -1,15 +1,15 @@
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for the LSBP estimated using the ECM algorithm.
+#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_ECM}} function.
 #' 
-#' @param object An object of class \verb{LSBP_EM}.
-#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="variance"} or \verb{type="cdf"}. See details.
-#' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
+#' @param object An object of class \code{\link[LSBP]{LSBP_ECM}}.
+#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="variance"} or \code{type="cdf"}. See details.
+#' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' @details The method \verb{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \verb{type="mean"}), the conditional variance (if \verb{type="variance"}) or the conditional cumulative distribution function (if \verb{type="cdf"}) at a given \verb{threshold}, after plugging-in the MAP, and using the observations contained in the \verb{newdata} data frame.
+#' @details The method \code{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \code{type="mean"}), the conditional variance (if \code{type="variance"}) or the conditional cumulative distribution function (if \code{type="cdf"}) at a given \code{threshold}, after plugging-in the MAP, and using the observations contained in the \code{newdata} data frame.
 #' 
 #' @export
 #' 
@@ -64,16 +64,16 @@ predict.LSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, 
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for the LSBP estimated using the Gibbs sampling algorithm.
+#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_Gibbs}} function.
 #' 
-#' @param object An object of class \verb{LSBP_Gibbs}.
-#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="predictive"},\verb{type="variance"} or \verb{type="cdf"}. See details.
-#' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
+#' @param object An object of class \code{\link[LSBP]{LSBP_Gibbs}}.
+#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},\code{type="variance"} or \code{type="cdf"}. See details.
+#' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
-#' @details The method \verb{predict.LSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
+#' @details The method \code{predict.LSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
 #' 
-#' If \verb{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
+#' If \code{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 #' @export
 #' 
 predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=NULL,...) {
@@ -168,17 +168,17 @@ predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=N
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for the LSBP estimated using the Variational Bayes algorithm.
+#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB} function.
 #' 
-#' @param object An object of class \verb{LSBP_VB}.
-#' @param type String indicating the type of prediction: \verb{type="mean"},\verb{type="predictive"},  \verb{type="variance"} or \verb{type="cdf"}. See details.
+#' @param object An object of class \code{\link[LSBP]{LSBP_VB}}.
+#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See details.
 #' @param R An integer indicating the number of replications for the returned sample.
-#' @param newdata A new data frame containing the same variables declared in \verb{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \verb{type="cdf"} is selected. See details.
+#' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
 #' @param ... Further arguments passed to or from other methods.
-#' @details The method \verb{predict.LSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \verb{newdata} data frame. 
+#' @details The method \code{predict.LSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
 #' 
-#' If \verb{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \verb{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \verb{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \verb{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \verb{threshold}.
+#' If \code{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 #' @export
 #' 
 predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, threshold=NULL, ...) {
@@ -305,12 +305,12 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
 #' Evaluate the conditional density of a LSBP given the parameters.
 #' 
 #' @param y A value of which the conditional density has to be computed
-#' @param X1 A \verb{n x p_kernel} design matrix for the kernel
-#' @param X2 A \verb{n x p_mixing} design matrix for the stick-breaking weights
-#' @param beta_kernel A \verb{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
-#' @param beta_mixing A \verb{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
-#' @param tau A \verb{H} dimensional vector of coefficients for the kernel precision
-#' @details The function \verb{LSBP_density} evaluates the conditional density of \verb{y} given the parameters
+#' @param X1 A \code{n x p_kernel} design matrix for the kernel
+#' @param X2 A \code{n x p_mixing} design matrix for the stick-breaking weights
+#' @param beta_kernel A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
+#' @param beta_mixing A \code{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
+#' @param tau A \code{H} dimensional vector of coefficients for the kernel precision
+#' @details The function \code{LSBP_density} evaluates the conditional density of \code{y} given the parameters
 #' @export
 #' 
 LSBP_density <- function(y, X1, X2, beta_kernel, beta_mixing, tau){

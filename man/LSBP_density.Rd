@@ -4,24 +4,24 @@
 \alias{LSBP_density}
 \title{Conditional density for a LSBP model}
 \usage{
-LSBP_density(y, X1, X2, beta, alpha, tau)
+LSBP_density(y, X1, X2, beta_kernel, beta_mixing, tau)
 }
 \arguments{
 \item{y}{A value of which the conditional density has to be computed}
 
-\item{X1}{A \verb{n x p_kernel} design matrix for the kernel}
+\item{X1}{A \code{n x p_kernel} design matrix for the kernel}
 
-\item{X2}{A \verb{n x p_mixing} design matrix for the stick-breaking weights}
+\item{X2}{A \code{n x p_mixing} design matrix for the stick-breaking weights}
 
-\item{beta}{A \verb{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel}
+\item{beta_kernel}{A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel}
 
-\item{alpha}{A \verb{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights}
+\item{beta_mixing}{A \code{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights}
 
-\item{tau}{A \verb{H} dimensional vector of coefficients for the kernel precision}
+\item{tau}{A \code{H} dimensional vector of coefficients for the kernel precision}
 }
 \description{
 Evaluate the conditional density of a LSBP given the parameters.
 }
 \details{
-The function \verb{LSBP_density} evaluates the conditional density of \verb{y} given the parameters
+The function \code{LSBP_density} evaluates the conditional density of \code{y} given the parameters
 }
