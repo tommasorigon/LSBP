@@ -11,11 +11,11 @@ control_ECM(maxiter = 10000, tol = 0.001, method_init = "cluster")
 
 \item{tol}{A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_ECM}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.}
 
-\item{method_init}{The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available methods are: \code{method_init='random'} and \code{method_init='deterministic'}.}
+\item{method_init}{The initialization method. The default \code{method_init='cluster'} partitions the covariates  using the \code{\link[cluster]{clara}} clustering algorithm. Other available options are: \code{method_init='random'} and \code{method_init='deterministic'}.}
 }
 \value{
-The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+The inputs are converted into a \code{list}. Missing arguments are filled with default values.
 }
 \description{
-This auxiliary function can be used for specifying the settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_ECM}} main function.
+The \code{control_ECM} function can be used for specifying the technical settings (i.e. the maximum number of iterations, the tolerance level, and the initialization method), of the \code{\link[LSBP]{LSBP_ECM}} function.
 }

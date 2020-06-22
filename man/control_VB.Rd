@@ -9,13 +9,13 @@ control_VB(maxiter = 10000, tol = 0.01, method_init = "cluster")
 \arguments{
 \item{maxiter}{An integer indicating the maximum number of iterations for the VB algorithm.}
 
-\item{tol}{A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_VB}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.}
+\item{tol}{A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_VB}} algorithm stops when the difference between consecutive values of the evidence lower bound (ELBO) is smaller than \code{tol}.}
 
-\item{method_init}{The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Another available method is \code{method_init='random'}.}
+\item{method_init}{The initialization method. The default \code{method_init='cluster'} partitions the covariates  using the \code{\link[cluster]{clara}} clustering algorithm. Another available option is \code{method_init='random'}.}
 }
 \value{
-The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+The inputs are converted into a \code{list}. Missing arguments are filled with default values.
 }
 \description{
-This auxiliary function can be used for specifying the technical settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_VB}} main function.
+The \code{control_VB} function can be used for specifying the technical settings (i.e. the maximum number of iterations, the tolerance level, and the initialization method), of the \code{\link[LSBP]{LSBP_VB}} main function.
 }

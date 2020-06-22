@@ -8,23 +8,23 @@ LSBP_Gibbs(Formula, data, H, prior, control = control_Gibbs(),
   verbose = TRUE)
 }
 \arguments{
-\item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.}
+\item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".}
 
-\item{data}{A data frame containing the variables of \code{Formula}.}
+\item{data}{A data frame containing the variables described in \code{Formula}. The data frame must be provided.}
 
 \item{H}{An integer indicating the number of mixture components.}
 
-\item{prior}{A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.}
+\item{prior}{A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used, although this is NOT recommended.}
 
 \item{control}{A list as returned by \code{\link[LSBP]{control_Gibbs}}.}
 
 \item{verbose}{A logical value indicating whether additional information should be displayed while the algorithm is running.}
 }
 \value{
-The output is an object of class '\code{LSBP_Gibbs}' containing the following quantities:
+The output is an object of class "\code{LSBP_Gibbs}" containing the following quantities:
 \itemize{
 \item \code{param}. A list containing MCMC replications for each set of coefficients: \code{beta_mixing, beta_kernel, tau}.
-\item \code{logposterior}. The \code{log-posterior} of the model at each MCMC iteration.
+\item \code{logposterior}. The \code{log-posterior} of the model at each MCMC iteration.  NOTE: the \code{log-posterior} is reported up to an additive constant.
 \item \code{call}. The input Formula.
 \item \code{data}. The input data frame.
 \item \code{control}. The control list provided as input.
@@ -36,9 +36,9 @@ The output is an object of class '\code{LSBP_Gibbs}' containing the following qu
 This function is an implementation of the Gibbs sampling Algorithm 1 in Rigon, T. and Durante, D. (2020).
 }
 \details{
-The \code{Formula} specification contains the response, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted it is implicitely assumed that the two sets are the same.
+The \code{Formula} specification contains the response \code{y}, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted, then it is implicitely assumed that the two sets are the same.
 
-If \code{offsets} or \code{weights} are provided in the \code{Formula} they will be ignored in the current version.
+If \code{offsets} or \code{weights} are provided in \code{Formula}, they will be IGNORED in the current version.
 A \code{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_Gibbs}}.
 }
 \examples{
@@ -48,12 +48,12 @@ data(cars)
 # A model with constant kernels
 fit_gibbs <- LSBP_Gibbs(dist ~  1 | speed, data=cars, H=4)
 plot(cars) 
-lines(cars$speed,colMeans(predict(fit_gibbs)))
+lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
 
 # A model with linear kernels
 fit_gibbs <- LSBP_Gibbs(dist ~ speed | speed, data=cars, H=2)
 plot(cars) 
-lines(cars$speed,colMeans(predict(fit_gibbs)))
+lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
 }
 
 }

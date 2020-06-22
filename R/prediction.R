@@ -299,18 +299,18 @@ predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, thr
    return(pred)
 }
 
-#' Conditional density for a LSBP model
+#' Conditional density of a LSBP model
 #' 
 #' 
-#' Evaluate the conditional density of a LSBP given the parameters.
+#' Evaluate the conditional density \eqn{f_x(y)} of a LSBP model, given the parameters and the covariates.
 #' 
-#' @param y A value of which the conditional density has to be computed
-#' @param X1 A \code{n x p_kernel} design matrix for the kernel
-#' @param X2 A \code{n x p_mixing} design matrix for the stick-breaking weights
-#' @param beta_kernel A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel
-#' @param beta_mixing A \code{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights
-#' @param tau A \code{H} dimensional vector of coefficients for the kernel precision
-#' @details The function \code{LSBP_density} evaluates the conditional density of \code{y} given the parameters
+#' @param y The value at which the conditional density must be evaluated.
+#' @param X1 A \code{n x p_kernel} design matrix for the kernel.
+#' @param X2 A \code{n x p_mixing} design matrix for the stick-breaking weights.
+#' @param beta_kernel A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel.
+#' @param beta_mixing A \code{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights.
+#' @param tau A \code{H} dimensional vector of coefficients for the kernel precision.
+#' @details The function \code{LSBP_density} evaluates the conditional density \eqn{f_x(y)}. The number of mixture components \code{H} is inferred from the dimensions of \code{beta_mixing} and \code{beta_kernel}.
 #' @export
 #' 
 LSBP_density <- function(y, X1, X2, beta_kernel, beta_mixing, tau){

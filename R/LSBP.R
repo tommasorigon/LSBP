@@ -28,13 +28,13 @@ ldet <- function(x) {
 
 #' Control parameters for the ECM algorithm
 #'
-#' This auxiliary function can be used for specifying the settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_ECM}} main function.
+#' The \code{control_ECM} function can be used for specifying the technical settings (i.e. the maximum number of iterations, the tolerance level, and the initialization method), of the \code{\link[LSBP]{LSBP_ECM}} function.
 #'
 #' @param maxiter An integer indicating the maximum number of iterations for the \code{\link[LSBP]{LSBP_ECM}} algorithm.
 #' @param tol  A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_ECM}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.
-#' @param method_init The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available methods are: \code{method_init='random'} and \code{method_init='deterministic'}.
+#' @param method_init The initialization method. The default \code{method_init='cluster'} partitions the covariates  using the \code{\link[cluster]{clara}} clustering algorithm. Other available options are: \code{method_init='random'} and \code{method_init='deterministic'}.
 #' 
-#' @return The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+#' @return The inputs are converted into a \code{list}. Missing arguments are filled with default values.
 #' 
 #' @export
 #' 
@@ -47,14 +47,14 @@ control_ECM <- function(maxiter = 10000, tol = 0.001, method_init = "cluster") {
 
 #' Control parameters for the VB algorithm
 #'
-#' This auxiliary function can be used for specifying the technical settings (i.e. maximum number of iterations, tolerance level, initialization method), of the \code{\link[LSBP]{LSBP_VB}} main function.
+#' The \code{control_VB} function can be used for specifying the technical settings (i.e. the maximum number of iterations, the tolerance level, and the initialization method), of the \code{\link[LSBP]{LSBP_VB}} main function.
 #'
 #'
 #' @param maxiter An integer indicating the maximum number of iterations for the VB algorithm.
-#' @param tol  A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_VB}} algorithm stops when the difference between consecutive values of the log-posterior is smaller than \code{tol}.
-#' @param method_init The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Another available method is \code{method_init='random'}.
+#' @param tol  A real number controlling the convergence of the algorithm. The \code{\link[LSBP]{LSBP_VB}} algorithm stops when the difference between consecutive values of the evidence lower bound (ELBO) is smaller than \code{tol}.
+#' @param method_init The initialization method. The default \code{method_init='cluster'} partitions the covariates  using the \code{\link[cluster]{clara}} clustering algorithm. Another available option is \code{method_init='random'}.
 #' 
-#' @return The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+#' @return The inputs are converted into a \code{list}. Missing arguments are filled with default values.
 #' 
 #' @export
 #' 
@@ -67,13 +67,13 @@ control_VB <- function(maxiter = 10000, tol = 0.01, method_init = "cluster") {
 
 #' Control parameters for the Gibbs sampling algorithm
 #'
-#' This auxiliary function can be used for specifying the technical settings (i.e. number of MCMC iterations, burn-in, initialization method), of the \code{\link[LSBP]{LSBP_Gibbs}} main function.
+#' The \code{control_Gibbs} function can be used for specifying the technical settings (i.e. the number of MCMC iterations, the burn-in, and the initialization method), of the \code{\link[LSBP]{LSBP_Gibbs}} function.
 #'
-#' @param R An integer indicating the number of replications to be computed after the burn-in.
-#' @param burn_in  An integer indicating the number of replication discarded as burn-in period.
-#' @param method_init The initialization criterium. By default, \code{method_init='cluster'} preallocates covariates into groups using \code{\link[cluster]{clara}}. Other available possibilities are: \code{method_init='random'} and \code{method_init='deterministic'}.
+#' @param R An integer indicating the number of MCMC iterations to be computed after the \code{burn-in}.
+#' @param burn_in  An integer indicating the number of MCMC iterations discarded as burn-in period.
+#' @param method_init The initialization method. The default \code{method_init='cluster'} partitions the covariates  using the \code{\link[cluster]{clara}} clustering algorithm.  Other available options are: \code{method_init='random'} and \code{method_init='deterministic'}.
 #' 
-#' @return The function returns a list having the same entries provided as argument. Missing arguments are filled with default values.
+#' @return The inputs are converted into a \code{list}. Missing arguments are filled with default values.
 #' 
 #' @export
 #' 
@@ -121,27 +121,27 @@ prior_LSBP <- function(p_kernel, p_mixing, b_kernel = rep(0, p_kernel), B_kernel
 #'
 #' This function is an implementation of the expectation maximization Algorithm 2 in Rigon, T. and Durante, D. (2020). 
 #' 
-#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
-#' @param data A data frame containing the variables of \code{Formula}. The data frame MUST be provided.
+#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".
+#' @param data A data frame containing the variables described in \code{Formula}. The data frame must be provided.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used, although this is NOT recommended.
 #' @param control A list as returned by \code{\link[LSBP]{control_ECM}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
-#' The \code{Formula} specification contains the response, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted then it is implicitely assumed that the two sets are the same.
+#' The \code{Formula} specification contains the response \code{y}, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted, then it is implicitely assumed that the two sets are the same.
 #' 
 #' If \code{offsets} or \code{weights} are provided in the \code{Formula} they will be ignored in the current version.
 # 
 #' A \code{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_ECM}}.
 #' 
 #' 
-#' @return The output is an object of class '\code{LSBP_ECM}' containing the following quantities:
+#' @return The output is an object of class "\code{LSBP_ECM}" containing the following quantities:
 #' \itemize{
-#' \item \code{param}. A list containing the maximum a posteriori, for each set of coefficients: \code{beta_mixing, beta_kernel, tau}.
+#' \item \code{param}. A list containing the maximum a posteriori, for each set of coefficients: \code{beta_mixing}, \code{beta_kernel}, and  \code{tau}.
 #' \item \code{cluster}. A \code{n} dimensional vector containing, for each observation, the mixture component having with the highest probability.
 #' \item \code{z}. A \code{n x H} matrix containing the probabilities of belonging to each of the mixture components, where \code{n} denotes the number of observations.
-#' \item \code{logposterior}. The \code{log-posterior} of the model at convergence.
+#' \item \code{logposterior}. The \code{log-posterior} of the model at convergence. NOTE: the \code{log-posterior} is reported up to an additive constant.
 #' \item \code{call}. The input Formula.
 #' \item \code{data}. The input data frame.
 #' \item \code{control}. The control list provided as input.
@@ -210,25 +210,25 @@ LSBP_ECM <- function(Formula, data, H, prior, control = control_ECM(), verbose =
 #'
 #' This function is an implementation of the Gibbs sampling Algorithm 1 in Rigon, T. and Durante, D. (2020). 
 #'  
-#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
-#' @param data A data frame containing the variables of \code{Formula}.
+#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".
+#' @param data A data frame containing the variables described in \code{Formula}. The data frame must be provided.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used, although this is NOT recommended.
 #' @param control A list as returned by \code{\link[LSBP]{control_Gibbs}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
-#' The \code{Formula} specification contains the response, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted it is implicitely assumed that the two sets are the same.
+#' The \code{Formula} specification contains the response \code{y}, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted, then it is implicitely assumed that the two sets are the same.
 #' 
-#' If \code{offsets} or \code{weights} are provided in the \code{Formula} they will be ignored in the current version.
+#' If \code{offsets} or \code{weights} are provided in \code{Formula}, they will be IGNORED in the current version.
 # 
 #' A \code{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_Gibbs}}.
 #' 
 #' 
-#' @return The output is an object of class '\code{LSBP_Gibbs}' containing the following quantities:
+#' @return The output is an object of class "\code{LSBP_Gibbs}" containing the following quantities:
 #' \itemize{
 #' \item \code{param}. A list containing MCMC replications for each set of coefficients: \code{beta_mixing, beta_kernel, tau}.
-#' \item \code{logposterior}. The \code{log-posterior} of the model at each MCMC iteration.
+#' \item \code{logposterior}. The \code{log-posterior} of the model at each MCMC iteration.  NOTE: the \code{log-posterior} is reported up to an additive constant.
 #' \item \code{call}. The input Formula.
 #' \item \code{data}. The input data frame.
 #' \item \code{control}. The control list provided as input.
@@ -244,12 +244,12 @@ LSBP_ECM <- function(Formula, data, H, prior, control = control_ECM(), verbose =
 #' # A model with constant kernels
 #' fit_gibbs <- LSBP_Gibbs(dist ~  1 | speed, data=cars, H=4)
 #' plot(cars) 
-#' lines(cars$speed,colMeans(predict(fit_gibbs)))
+#' lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
 #' 
 #' # A model with linear kernels
 #' fit_gibbs <- LSBP_Gibbs(dist ~ speed | speed, data=cars, H=2)
 #' plot(cars) 
-#' lines(cars$speed,colMeans(predict(fit_gibbs)))
+#' lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
 #' }
 #' 
 #' @export
@@ -298,28 +298,28 @@ LSBP_Gibbs <- function(Formula, data, H , prior, control = control_Gibbs(), verb
 #'
 #' This function is an implementation of the variational Bayes Algorithm 3 in Rigon, T. and Durante, D. (2020). 
 #' 
-#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be fitted. The details of model specification are given under 'Details'.
-#' @param data A data frame containing the variables of \code{Formula}.
+#' @param Formula An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".
+#' @param data A data frame containing the variables described in \code{Formula}. The data frame must be provided.
 #' @param H An integer indicating the number of mixture components.
-#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used.
+#' @param prior A list of prior hyperparameters as returned by \code{\link[LSBP]{prior_LSBP}}. If missing, default prior values are used, although this is NOT recommended.
 #' @param control A list as returned by \code{\link[LSBP]{control_VB}}.
 #' @param verbose A logical value indicating whether additional information should be displayed while the algorithm is running.
 #' 
 #' @details 
-#' The \code{Formula} specification contains the response, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted it is implictely assumed that the two sets are the same.
+#' The \code{Formula} specification contains the response \code{y}, separated from the covariates with the symbol '\code{~}', and two sets of covariates. The latters are separated by the symbol '\code{|}', indicating the kernel covariates and the mixing covariates, respectively. For example, one could specify \code{y ~ x1 + x2 | x3 + x4}. NOTE: if the second set of covariates is omitted, then it is implicitely assumed that the two sets are the same.
 #' 
-#' If \code{offsets} or \code{weights} are provided in the \code{Formula} they will be ignored in the current version.
+#' If \code{offsets} or \code{weights} are provided in \code{Formula}, they will be IGNORED in the current version.
 # 
 #' A \code{predict} method is available and described at \code{\link[LSBP]{predict.LSBP_VB}}.
 #' 
 #' 
-#' @return The output is an object of class '\code{LSBP_VB}' containing the following quantities:
+#' @return The output is an object of class "\code{LSBP_VB}" containing the following quantities:
 #' \itemize{
-#' \item \code{param}. A list containing the parameters for the variational approximation of each distribution: \code{mu_mixing, Sigma_mixing, mu_kernel, Sigma_kernel, a_tilde, b_tilde}.
+#' \item \code{param}. A list containing the parameters for the variational approximation of each distribution: \code{mu_mixing}, \code{Sigma_mixing}, \code{mu_kernel}, \code{Sigma_kernel}, \code{a_tilde}, \code{b_tilde}.
 #' \item \code{cluster}. A \code{n} dimensional vector containing, for each observation, the mixture component having with the highest probability.
 #' \item \code{z}. A \code{n x H} matrix containing the probabilities of belonging to each of the mixture components, where \code{n} denotes the number of observations.
-#' \item \code{logposterior}. The \code{log-posterior} of the model at convergence.
-#' \item \code{call}. The input Formula 
+#' \item \code{lowerbound}. The \code{lowerbound} is the evidence lower bound (ELBO) of the model at convergence.  NOTE: the \code{lowerbound} is reported up to an additive constant.
+#' \item \code{call}. The input Formula.
 #' \item \code{data}. The input data frame.
 #' \item \code{control}. The control list provided as input.
 #' \item \code{H}. The input number of mixture components.

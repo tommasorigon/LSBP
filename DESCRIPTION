@@ -5,7 +5,7 @@ Version: 0.0.4
 Date: 2020-06-21
 Author: Tommaso Rigon
 Maintainer: Tommaso Rigon <tommaso.rigon@gmail.com>
-Description: Posterior inference for the logit stick-breaking model with Gaussian kernels. The LSBP package is an implementation of the algorithms described in the paper: Rigon, T. and Durante, D. (2020). Tractable Bayesian Tractable Bayesian density regression via logit stick-breaking priors. Journal of Statistical Planning and Inference.
+Description: Bayesian density regression via logit stick-breaking priors. The LSBP package is an implementation of the algorithms described in: Rigon, T. and Durante, D. (2020). 
 LazyData: TRUE
 Imports:
     Rcpp (>= 0.12.9),
