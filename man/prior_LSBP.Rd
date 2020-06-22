@@ -15,7 +15,7 @@ prior_LSBP(p_kernel, p_mixing, b_kernel = rep(0, p_kernel),
 
 \item{B_kernel}{A \code{p_kernel x p_kernel} matrix representing the prior covariance of the  Gaussian kernel coefficients.}
 
-\item{b_mixing}{A \code{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients}
+\item{b_mixing}{A \code{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients.}
 
 \item{B_mixing}{A \code{p_mixing x p_mixing} matrix representing the prior covariance  of the Gaussian mixing coefficients.}
 

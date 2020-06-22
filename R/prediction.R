@@ -1,15 +1,15 @@
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_ECM}} function.
+#' Predict method for a LSBP model, estimated using the \code{\link[LSBP]{LSBP_ECM}} function.
 #' 
 #' @param object An object of class \code{\link[LSBP]{LSBP_ECM}}.
-#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="variance"} or \code{type="cdf"}. See details.
+#' @param type String indicating the type of prediction. The available options are: \code{type="mean"}, \code{type="variance"}, or \code{type="cdf"}. See "Details".
 #' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See "Details".
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' @details The method \code{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \code{type="mean"}), the conditional variance (if \code{type="variance"}) or the conditional cumulative distribution function (if \code{type="cdf"}) at a given \code{threshold}, after plugging-in the MAP, and using the observations contained in the \code{newdata} data frame.
+#' @details The method \code{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \code{type="mean"}), the conditional variance (if \code{type="variance"}) or the conditional cumulative distribution function (if \code{type="cdf"}) at a given \code{threshold}, after plugging-in the maximum a posteriori, and using the observations contained in the \code{newdata} data frame.
 #' 
 #' @export
 #' 
@@ -64,16 +64,16 @@ predict.LSBP_ECM <- function(object, type="mean", newdata=NULL, threshold=NULL, 
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_Gibbs}} function.
+#' Predict method for a LSBP model estimated using the \code{\link[LSBP]{LSBP_Gibbs}} function.
 #' 
 #' @param object An object of class \code{\link[LSBP]{LSBP_Gibbs}}.
-#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},\code{type="variance"} or \code{type="cdf"}. See details.
+#' @param type String indicating the type of prediction. The available options are \code{type="mean"},\code{type="predictive"}, \code{type="variance"}, or \code{type="cdf"}. See "Details".
 #' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See "Details".
 #' @param ... Further arguments passed to or from other methods.
 #' @details The method \code{predict.LSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
 #' 
-#' If \code{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
+#' If \code{type="mean"}, then a sample from the posterior of the mean of a LSBP model is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"}, then a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"}, then a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 #' @export
 #' 
 predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=NULL,...) {
@@ -168,17 +168,17 @@ predict.LSBP_Gibbs <- function(object, type = "mean", newdata = NULL,threshold=N
 #' Predict method for the LSBP
 #' 
 #' 
-#' Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB}} function.
+#' Predict method for a LSBP model estimated using the \code{\link[LSBP]{LSBP_VB}} function.
 #' 
 #' @param object An object of class \code{\link[LSBP]{LSBP_VB}}.
-#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See details.
+#' @param type String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See "Details".
 #' @param R An integer indicating the number of replications for the returned sample.
 #' @param newdata A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.
-#' @param threshold Only needed if \code{type="cdf"} is selected. See details.
+#' @param threshold Only needed if \code{type="cdf"} is selected. See "Details".
 #' @param ... Further arguments passed to or from other methods.
 #' @details The method \code{predict.LSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
 #' 
-#' If \code{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
+#'  If \code{type="mean"}, then a sample from the (variational) posterior of the mean of a LSBP model is returned. If \code{type="predictive"} is selected, then a sample from the (variational) predictive distribution is returned.  If \code{type="variance"}, then a sample from the (variational) posterior distribution of the LSBP variance is returned.  If \code{type="cdf"}, then a sample from the (variational) posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 #' @export
 #' 
 predict.LSBP_VB <- function(object, type = "mean", R = 5000, newdata = NULL, threshold=NULL, ...) {

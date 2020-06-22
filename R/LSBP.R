@@ -91,7 +91,7 @@ control_Gibbs <- function(R = 5000, burn_in = 1000, method_init = "cluster") {
 #' @param p_kernel,p_mixing The dimension of the design matrices for the kernel component and the mixing component, respectively.
 #' @param b_kernel A \code{p_kernel} dimensional vector representing the prior mean for the  Gaussian kernel coefficients.
 #' @param B_kernel A \code{p_kernel x p_kernel} matrix representing the prior covariance of the  Gaussian kernel coefficients.
-#' @param b_mixing A \code{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients
+#' @param b_mixing A \code{p_mixing} dimensional vector containing the prior mean of the Gaussian mixing coefficients.
 #' @param B_mixing A \code{p_mixing x p_mixing} matrix representing the prior covariance  of the Gaussian mixing coefficients.
 #' @param a_tau,b_tau The hyperparameters of a Gamma prior distribution for the kernel precision.
 #' 

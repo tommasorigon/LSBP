@@ -10,17 +10,17 @@
 \arguments{
 \item{object}{An object of class \code{\link[LSBP]{LSBP_ECM}}.}
 
-\item{type}{String indicating the type of prediction: \code{type="mean"},\code{type="variance"} or \code{type="cdf"}. See details.}
+\item{type}{String indicating the type of prediction. The available options are: \code{type="mean"}, \code{type="variance"}, or \code{type="cdf"}. See "Details".}
 
 \item{newdata}{A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.}
 
-\item{threshold}{Only needed if \code{type="cdf"} is selected. See details.}
+\item{threshold}{Only needed if \code{type="cdf"} is selected. See "Details".}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_ECM}} function.
+Predict method for a LSBP model, estimated using the \code{\link[LSBP]{LSBP_ECM}} function.
 }
 \details{
-The method \code{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \code{type="mean"}), the conditional variance (if \code{type="variance"}) or the conditional cumulative distribution function (if \code{type="cdf"}) at a given \code{threshold}, after plugging-in the MAP, and using the observations contained in the \code{newdata} data frame.
+The method \code{predict.LSBP_ECM} produces predicted values, obtained by evaluating the conditional mean (if \code{type="mean"}), the conditional variance (if \code{type="variance"}) or the conditional cumulative distribution function (if \code{type="cdf"}) at a given \code{threshold}, after plugging-in the maximum a posteriori, and using the observations contained in the \code{newdata} data frame.
 }

@@ -10,21 +10,21 @@
 \arguments{
 \item{object}{An object of class \code{\link[LSBP]{LSBP_VB}}.}
 
-\item{type}{String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See details.}
+\item{type}{String indicating the type of prediction: \code{type="mean"},\code{type="predictive"},  \code{type="variance"} or \code{type="cdf"}. See "Details".}
 
 \item{R}{An integer indicating the number of replications for the returned sample.}
 
 \item{newdata}{A new data frame containing the same variables declared in \code{Formula}. If missing, the dataset provided for estimation is used.}
 
-\item{threshold}{Only needed if \code{type="cdf"} is selected. See details.}
+\item{threshold}{Only needed if \code{type="cdf"} is selected. See "Details".}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Predict method for a LSBP estimated using the \code{\link[LSBP]{LSBP_VB}} function.
+Predict method for a LSBP model estimated using the \code{\link[LSBP]{LSBP_VB}} function.
 }
 \details{
 The method \code{predict.LSBP_VB} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
 
-If \code{type="mean"} a sample from the posterior distribution of the LSBP mean is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"} a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"} a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
+ If \code{type="mean"}, then a sample from the (variational) posterior of the mean of a LSBP model is returned. If \code{type="predictive"} is selected, then a sample from the (variational) predictive distribution is returned.  If \code{type="variance"}, then a sample from the (variational) posterior distribution of the LSBP variance is returned.  If \code{type="cdf"}, then a sample from the (variational) posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 }
