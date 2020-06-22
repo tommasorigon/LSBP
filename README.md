@@ -15,4 +15,4 @@ devtools::install_github("tommasorigon/LSBP")
 
 Alternatively, install the `R` package from the source file `LSBP_VERSION.tar.gz` with `R CMD INSTALL LSBP_VERSION.tar.gz`. 
 
-The file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial/tutorial.md) contains detailed instruction for reproducing the epidemiological application of **Section 4** in the paper.
+The documentation of the `LSBP` package is available in [this repository](https://github.com/tommasorigon/LSBP/blob/master/LSBP_0.0.4.pdf). The file [`tutorial.md`](https://github.com/tommasorigon/LSBP/blob/master/Tutorial/tutorial.md) contains detailed instruction for reproducing the epidemiological application of **Section 4** in the paper.
