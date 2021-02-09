@@ -9,3 +9,6 @@ src/*.dll
 .DS_Store
 LSBP.Rproj
 src/RcppExports.o-f4b3ec00
+OTHER_FUNCTIONS_NOT_INCLUDED/functions.cpp
+OTHER_FUNCTIONS_NOT_INCLUDED/Poisson_Kernel.R
+OTHER_FUNCTIONS_NOT_INCLUDED/LSBP.R
