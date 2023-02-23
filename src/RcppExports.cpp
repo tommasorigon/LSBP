@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // G_update
 List G_update(arma::vec y, arma::mat X, arma::mat beta, arma::vec mu, arma::vec tau);
 RcppExport SEXP _LSBP_G_update(SEXP ySEXP, SEXP XSEXP, SEXP betaSEXP, SEXP muSEXP, SEXP tauSEXP) {

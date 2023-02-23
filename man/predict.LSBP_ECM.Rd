@@ -4,8 +4,7 @@
 \alias{predict.LSBP_ECM}
 \title{Predict method for the LSBP}
 \usage{
-\method{predict}{LSBP_ECM}(object, type = "mean", newdata = NULL,
-  threshold = NULL, ...)
+\method{predict}{LSBP_ECM}(object, type = "mean", newdata = NULL, threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[LSBP]{LSBP_ECM}}.}

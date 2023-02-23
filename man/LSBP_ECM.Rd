@@ -4,8 +4,7 @@
 \alias{LSBP_ECM}
 \title{ECM algorithm for the LSBP model}
 \usage{
-LSBP_ECM(Formula, data, H, prior, control = control_ECM(),
-  verbose = TRUE)
+LSBP_ECM(Formula, data, H, prior, control = control_ECM(), verbose = TRUE)
 }
 \arguments{
 \item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".}
@@ -48,14 +47,14 @@ A \code{predict} method is available and described at \code{\link[LSBP]{predict.
 data(cars)
 
 # A model with constant kernels
-fit_em <- LSBP_ECM(dist ~  1 | speed, data=cars, H=4)
-plot(cars) 
-lines(cars$speed,predict(fit_em))
+fit_em <- LSBP_ECM(dist ~ 1 | speed, data = cars, H = 4)
+plot(cars)
+lines(cars$speed, predict(fit_em))
 
 # A model with linear kernels
-fit_em <- LSBP_ECM(dist ~ speed | speed, data=cars, H=2)
-plot(cars) 
-lines(cars$speed,predict(fit_em))
+fit_em <- LSBP_ECM(dist ~ speed | speed, data = cars, H = 2)
+plot(cars)
+lines(cars$speed, predict(fit_em))
 }
 }
 \references{

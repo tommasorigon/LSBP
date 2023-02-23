@@ -4,8 +4,7 @@
 \alias{predict.LSBP_Gibbs}
 \title{Predict method for the LSBP}
 \usage{
-\method{predict}{LSBP_Gibbs}(object, type = "mean", newdata = NULL,
-  threshold = NULL, ...)
+\method{predict}{LSBP_Gibbs}(object, type = "mean", newdata = NULL, threshold = NULL, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link[LSBP]{LSBP_Gibbs}}.}
@@ -22,7 +21,7 @@
 Predict method for a LSBP model estimated using the \code{\link[LSBP]{LSBP_Gibbs}} function.
 }
 \details{
-The method \code{predict.LSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame. 
+The method \code{predict.LSBP_Gibbs} produces a sample of predicted values, obtained by evaluating the conditional mean of the LSBP model or the predictive distribution, using the observations contained in the \code{newdata} data frame.
 
 If \code{type="mean"}, then a sample from the posterior of the mean of a LSBP model is returned. If \code{type="predictive"} is selected, then a sample from the predictive distribution is returned.  If \code{type="variance"}, then a sample from the posterior distribution of the LSBP variance is returned.  If \code{type="cdf"}, then a sample from the posterior distribution of the LSBP cumulative distribution function is returned, evaluated at \code{threshold}.
 }

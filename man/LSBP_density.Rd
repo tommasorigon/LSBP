@@ -4,7 +4,7 @@
 \alias{LSBP_density}
 \title{Conditional density of a LSBP model}
 \usage{
-LSBP_density(y, X1, X2, beta_kernel, beta_mixing, tau)
+LSBP_density(y, X1, X2, beta_mixing, beta_kernel, tau)
 }
 \arguments{
 \item{y}{The value at which the conditional density must be evaluated.}
@@ -13,9 +13,9 @@ LSBP_density(y, X1, X2, beta_kernel, beta_mixing, tau)
 
 \item{X2}{A \code{n x p_mixing} design matrix for the stick-breaking weights.}
 
-\item{beta_kernel}{A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel.}
-
 \item{beta_mixing}{A \code{H-1 x p_mixing} dimensional matrix of coefficients for the linear predictor of the stick-breaking weights.}
+
+\item{beta_kernel}{A \code{H x p_kernel} dimensional matrix of coefficients for the linear predictor of the kernel.}
 
 \item{tau}{A \code{H} dimensional vector of coefficients for the kernel precision.}
 }

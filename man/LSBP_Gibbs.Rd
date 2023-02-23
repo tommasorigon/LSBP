@@ -4,8 +4,7 @@
 \alias{LSBP_Gibbs}
 \title{Gibbs sampling algorithm for the LSBP model}
 \usage{
-LSBP_Gibbs(Formula, data, H, prior, control = control_Gibbs(),
-  verbose = TRUE)
+LSBP_Gibbs(Formula, data, H, prior, control = control_Gibbs(), verbose = TRUE)
 }
 \arguments{
 \item{Formula}{An object of class \code{\link[Formula]{Formula}}: a symbolic description of the model to be estimated. The details of model specification are given under "Details".}
@@ -46,14 +45,14 @@ A \code{predict} method is available and described at \code{\link[LSBP]{predict.
 data(cars)
 
 # A model with constant kernels
-fit_gibbs <- LSBP_Gibbs(dist ~  1 | speed, data=cars, H=4)
-plot(cars) 
-lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
+fit_gibbs <- LSBP_Gibbs(dist ~ 1 | speed, data = cars, H = 4)
+plot(cars)
+lines(cars$speed, colMeans(predict(fit_gibbs))) # Posterior mean
 
 # A model with linear kernels
-fit_gibbs <- LSBP_Gibbs(dist ~ speed | speed, data=cars, H=2)
-plot(cars) 
-lines(cars$speed,colMeans(predict(fit_gibbs))) # Posterior mean
+fit_gibbs <- LSBP_Gibbs(dist ~ speed | speed, data = cars, H = 2)
+plot(cars)
+lines(cars$speed, colMeans(predict(fit_gibbs))) # Posterior mean
 }
 
 }

@@ -4,9 +4,16 @@
 \alias{prior_LSBP}
 \title{Prior specification for the LSBP model}
 \usage{
-prior_LSBP(p_kernel, p_mixing, b_kernel = rep(0, p_kernel),
-  B_kernel = diag(10^6, p_kernel), b_mixing = rep(0, p_mixing),
-  B_mixing = diag(10^4, p_mixing), a_tau = 0.1, b_tau = 0.1)
+prior_LSBP(
+  p_kernel,
+  p_mixing,
+  b_kernel = rep(0, p_kernel),
+  B_kernel = diag(10^6, p_kernel),
+  b_mixing = rep(0, p_mixing),
+  B_mixing = diag(10^4, p_mixing),
+  a_tau = 0.1,
+  b_tau = 0.1
+)
 }
 \arguments{
 \item{p_kernel, p_mixing}{The dimension of the design matrices for the kernel component and the mixing component, respectively.}
@@ -30,7 +37,7 @@ This auxiliary function can be used for specifying the prior hyperparameters in 
 \examples{
 \dontrun{
 data(cars)
-prior  <- prior_LSBP(p_kernel=1, p_mixing=2, a_tau=1.5 ,b_tau=1.5)
-fit_em <- LSBP_ECM(dist ~ 1 | speed, data=cars, H=4, prior=prior)
+prior <- prior_LSBP(p_kernel = 1, p_mixing = 2, a_tau = 1.5, b_tau = 1.5)
+fit_em <- LSBP_ECM(dist ~ 1 | speed, data = cars, H = 4, prior = prior)
 }
 }
